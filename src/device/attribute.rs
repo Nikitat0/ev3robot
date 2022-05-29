@@ -1,10 +1,19 @@
 use std::cell::RefCell;
 use std::error::Error as StdError;
+use std::ffi::OsStr;
 use std::fs::{File, OpenOptions};
 use std::io::{Error, ErrorKind, Read, Result, Seek, SeekFrom, Write};
 use std::marker::PhantomData;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
+
+pub trait Attribute: Sized {
+    fn of_device(
+        device_class: impl AsRef<OsStr>,
+        device_name: impl AsRef<OsStr>,
+        attr_name: &'static str,
+    ) -> Result<Self>;
+}
 
 pub struct AttributeFile<T, const READABLE: bool, const WRITEABLE: bool> {
     file: RefCell<File>,
@@ -29,6 +38,20 @@ impl<T, const R: bool, const W: bool> AttributeFile<T, R, W> {
     }
 }
 
+impl<T, const R: bool, const W: bool> Attribute for AttributeFile<T, R, W> {
+    fn of_device(
+        device_class: impl AsRef<OsStr>,
+        device_name: impl AsRef<OsStr>,
+        attr_name: &'static str,
+    ) -> Result<Self> {
+        let mut path = PathBuf::from("/sys/class");
+        path.push(device_class.as_ref());
+        path.push(device_name.as_ref());
+        path.push(attr_name);
+        Self::open(path)
+    }
+}
+
 impl<T: FromStr, const W: bool> ReadableAttributeFile<T, W>
 where
     T::Err: Into<Box<dyn StdError + Send + Sync>>,
@@ -50,5 +73,19 @@ impl<T: ToString, const R: bool> WriteableAttributeFile<T, R> {
         file.seek(SeekFrom::Start(0))?;
         file.write_all(value.to_string().as_bytes())?;
         Ok(())
+    }
+}
+
+impl<T: FromStr> Attribute for T
+where
+    T::Err: Into<Box<dyn StdError + Send + Sync>>,
+{
+    fn of_device(
+        device_class: impl AsRef<OsStr>,
+        device_name: impl AsRef<OsStr>,
+        attr_name: &'static str,
+    ) -> Result<Self> {
+        ReadOnlyAttributeFile::of_device(device_class, device_name, attr_name)?
+            .value()
     }
 }
