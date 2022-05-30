@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 ev3robot_macros = { path = "macros" }
+tap = "1"
 thiserror = "1"
