@@ -1,5 +1,3 @@
-use std::error;
-
 use thiserror::Error;
 
 pub type ConnectionResult<T> = Result<T, ConnectionError>;
@@ -9,5 +7,5 @@ pub enum ConnectionError {
     #[error("There is no device with name {name}")]
     NotExist { name: String },
     #[error(transparent)]
-    Unexpected(Box<dyn error::Error + Send + Sync>),
+    Unexpected(#[from] anyhow::Error),
 }
