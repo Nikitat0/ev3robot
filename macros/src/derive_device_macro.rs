@@ -41,6 +41,10 @@ impl ToTokens for Device {
                 where
                     S: ::std::convert::AsRef<::std::ffi::OsStr>
                 {
+                    ev3robot::device::check_device_exists(
+                        Self::CLASS,
+                        __device_name.as_ref(),
+                    )?;
                     Ok(Self {#(#field_inits),*})
                 }
             }

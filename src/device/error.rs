@@ -1,5 +1,7 @@
 use std::error;
+use std::ffi::OsStr;
 use std::fmt::Display;
+use std::path::PathBuf;
 
 use thiserror::Error;
 
@@ -32,4 +34,25 @@ impl ConnectionError {
     {
         ConnectionError::Unexpected(anyhow::Error::new(err).context(context))
     }
+}
+
+pub fn is_device_exists<S: AsRef<OsStr>>(
+    class: &'static str,
+    device_name: S,
+) -> bool {
+    let mut path = PathBuf::from("/sys/class");
+    path.push(class);
+    path.push(device_name.as_ref());
+    path.exists()
+}
+
+pub fn check_device_exists<S: AsRef<OsStr>>(
+    class: &'static str,
+    device_name: S,
+) -> ConnectionResult<()> {
+    is_device_exists(class, device_name.as_ref()).then(|| ()).ok_or(
+        ConnectionError::NotExist {
+            name: device_name.as_ref().to_string_lossy().to_string(),
+        },
+    )
 }
