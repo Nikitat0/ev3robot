@@ -1,19 +1,30 @@
-use std::error;
 use std::ffi::OsStr;
-use std::fmt::Display;
+use std::fmt::{Debug, Display, Formatter};
 use std::path::PathBuf;
+use std::{error, fmt};
 
 use thiserror::Error;
 
 pub type ConnectionResult<T> = Result<T, ConnectionError>;
 
-#[derive(Debug, Error)]
+#[derive(Error)]
 #[non_exhaustive]
 pub enum ConnectionError {
     #[error("There is no device with name {name}")]
     NotExist { name: String },
     #[error(transparent)]
     Unexpected(#[from] anyhow::Error),
+}
+
+impl Debug for ConnectionError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            ConnectionError::NotExist { name } => {
+                f.debug_struct("NotExist").field("name", name).finish()
+            }
+            ConnectionError::Unexpected(err) => Debug::fmt(err, f),
+        }
+    }
 }
 
 impl ConnectionError {
