@@ -21,27 +21,59 @@ struct Device {
     ident: syn::Ident,
     generics: syn::Generics,
     class: String,
+    data: darling::ast::Data<(), DeviceField>,
 }
 
 impl ToTokens for Device {
     fn to_tokens(&self, tokens: &mut TokenStream2) {
-        let Self { ident, generics, class } = self;
+        let Self { ident, generics, class, data } = self;
         let (impl_generics, ty_generics, where_clause) =
             generics.split_for_impl();
+        let field_inits = data.clone().take_struct().unwrap().fields;
         tokens.extend(quote! {
             impl #impl_generics ev3robot::device::Device
                 for #ident #ty_generics #where_clause
             {
                 const CLASS: &'static str = #class;
 
-                fn try_connect<S>(name: S)
+                fn try_connect<S>(__device_name: S)
                     -> ev3robot::device::ConnectionResult<Self>
                 where
                     S: ::std::convert::AsRef<::std::ffi::OsStr>
                 {
-                    todo!()
+                    Ok(Self {#(#field_inits),*})
                 }
             }
+        })
+    }
+}
+
+#[derive(Clone, FromField)]
+#[darling(attributes(ev3robot))]
+struct DeviceField {
+    ident: Option<syn::Ident>,
+    #[darling(default)]
+    name: Option<String>,
+}
+
+impl ToTokens for DeviceField {
+    fn to_tokens(&self, tokens: &mut TokenStream2) {
+        let Self { name, ident } = self;
+        let name = name
+            .as_ref()
+            .map(Clone::clone)
+            .or_else(|| ident.as_ref().map(ToString::to_string));
+        tokens.extend(quote! {
+            #ident: ev3robot::device::Attribute::of_device(
+                Self::CLASS,
+                &__device_name,
+                #name,
+            ).map_err(|err| {
+                ev3robot::device::ConnectionError::new_unexpected_with_context(
+                    err,
+                    ::std::format!("Error in attribute {}", #name)
+                )
+            })?
         })
     }
 }
