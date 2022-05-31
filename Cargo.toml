@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1"
 ev3robot_macros = { path = "macros" }
 tap = "1"
 thiserror = "1"
