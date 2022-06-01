@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::error::Error as StdError;
 use std::ffi::OsStr;
+use std::fmt::{Debug, Formatter};
 use std::fs::{File, OpenOptions};
 use std::io::{Error, ErrorKind, Read, Result, Seek, SeekFrom, Write};
 use std::marker::PhantomData;
@@ -73,6 +74,12 @@ impl<T: ToString, const R: bool> WriteableAttributeFile<T, R> {
         file.seek(SeekFrom::Start(0))?;
         file.write_all(value.to_string().as_bytes())?;
         Ok(())
+    }
+}
+
+impl<T, const R: bool, const W: bool> Debug for AttributeFile<T, R, W> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("AttributeFile").field(&self.file.borrow()).finish()
     }
 }
 
