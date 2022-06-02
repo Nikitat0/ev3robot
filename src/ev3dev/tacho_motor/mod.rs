@@ -1,13 +1,18 @@
+mod command;
 mod polarity;
 
+pub use command::*;
 pub use polarity::*;
 
 use crate as ev3robot;
-use crate::device::{ReadOnlyAttributeFile, ReadWriteAttributeFile};
+use crate::device::{
+    ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
+};
 
 #[derive(Debug, Device)]
 #[ev3robot(class = "tacho-motor")]
 pub struct TachoMotorDevice {
+    pub command: WriteOnlyAttributeFile<Command>,
     pub count_per_rot: u32,
     pub duty_cycle: ReadOnlyAttributeFile<i8>,
     pub duty_cycle_sp: ReadWriteAttributeFile<i8>,
