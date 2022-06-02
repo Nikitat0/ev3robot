@@ -1,8 +1,10 @@
 mod command;
 mod polarity;
+mod stop_action;
 
 pub use command::*;
 pub use polarity::*;
+pub use stop_action::*;
 
 use crate as ev3robot;
 use crate::device::{
@@ -22,4 +24,5 @@ pub struct TachoMotorDevice {
     pub max_speed: u32,
     pub speed: ReadOnlyAttributeFile<i32>,
     pub speed_sp: ReadWriteAttributeFile<i32>,
+    pub stop_action: ReadWriteAttributeFile<StopAction>,
 }
