@@ -10,8 +10,8 @@ pub type ConnectionResult<T> = Result<T, ConnectionError>;
 #[derive(Error)]
 #[non_exhaustive]
 pub enum ConnectionError {
-    #[error("There is no device with name {name}")]
-    NotExist { name: String },
+    #[error("Device not found")]
+    NotFound,
     #[error(transparent)]
     Unexpected(#[from] anyhow::Error),
 }
@@ -19,9 +19,7 @@ pub enum ConnectionError {
 impl Debug for ConnectionError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            ConnectionError::NotExist { name } => {
-                f.debug_struct("NotExist").field("name", name).finish()
-            }
+            ConnectionError::NotFound => f.debug_tuple("NotFound").finish(),
             ConnectionError::Unexpected(err) => Debug::fmt(err, f),
         }
     }
@@ -61,9 +59,7 @@ pub fn check_device_exists<S: AsRef<OsStr>>(
     class: &'static str,
     device_name: S,
 ) -> ConnectionResult<()> {
-    is_device_exists(class, device_name.as_ref()).then(|| ()).ok_or(
-        ConnectionError::NotExist {
-            name: device_name.as_ref().to_string_lossy().to_string(),
-        },
-    )
+    is_device_exists(class, device_name)
+        .then(|| ())
+        .ok_or(ConnectionError::NotFound)
 }
