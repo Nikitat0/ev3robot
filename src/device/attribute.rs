@@ -57,7 +57,7 @@ impl<T: FromStr, const W: bool> ReadableAttributeFile<T, W>
 where
     T::Err: Into<Box<dyn StdError + Send + Sync>>,
 {
-    pub fn value(&mut self) -> Result<T> {
+    pub fn value(&self) -> Result<T> {
         let mut file = self.file.borrow_mut();
         let mut raw = String::new();
         file.seek(SeekFrom::Start(0))?;
@@ -69,7 +69,7 @@ where
 }
 
 impl<T: ToString, const R: bool> WriteableAttributeFile<T, R> {
-    pub fn set_value(&mut self, value: T) -> Result<()> {
+    pub fn set_value(&self, value: T) -> Result<()> {
         let mut file = self.file.borrow_mut();
         file.seek(SeekFrom::Start(0))?;
         file.write_all(value.to_string().as_bytes())?;
