@@ -16,16 +16,16 @@ use crate::device::{
 #[derive(Debug, Device)]
 #[ev3robot(class = "tacho-motor")]
 pub struct TachoMotorDevice {
-    pub command: WriteOnlyAttributeFile<Command>,
-    pub count_per_rot: u32,
-    pub duty_cycle: ReadOnlyAttributeFile<i8>,
-    pub duty_cycle_sp: ReadWriteAttributeFile<i8>,
-    pub polarity: ReadWriteAttributeFile<Polarity>,
-    pub position: ReadWriteAttributeFile<i32>,
-    pub position_sp: ReadWriteAttributeFile<i32>,
-    pub max_speed: u32,
-    pub state: ReadOnlyAttributeFile<State>,
-    pub speed: ReadOnlyAttributeFile<i32>,
-    pub speed_sp: ReadWriteAttributeFile<i32>,
-    pub stop_action: ReadWriteAttributeFile<StopAction>,
+    command: WriteOnlyAttributeFile<Command>,
+    count_per_rot: u32,
+    duty_cycle: ReadOnlyAttributeFile<i8>,
+    duty_cycle_sp: ReadWriteAttributeFile<i8>,
+    polarity: ReadWriteAttributeFile<Polarity>,
+    position: ReadWriteAttributeFile<i32>,
+    position_sp: ReadWriteAttributeFile<i32>,
+    max_speed: u32,
+    state: ReadOnlyAttributeFile<State>,
+    speed: ReadOnlyAttributeFile<i32>,
+    speed_sp: ReadWriteAttributeFile<i32>,
+    stop_action: ReadWriteAttributeFile<StopAction>,
 }
