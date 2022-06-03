@@ -105,3 +105,7 @@ impl TachoMotor {
         self.stop_action.set_value(stop_action)
     }
 }
+
+pub trait AsTachoMotor {
+    fn as_tacho_motor(&self) -> &TachoMotor;
+}
