@@ -17,7 +17,7 @@ use crate::device::{
 
 #[derive(Debug, Device)]
 #[ev3robot(class = "tacho-motor")]
-pub struct TachoMotorDevice {
+pub struct TachoMotor {
     command: WriteOnlyAttributeFile<Command>,
     count_per_rot: u32,
     duty_cycle: ReadOnlyAttributeFile<i8>,
@@ -32,7 +32,7 @@ pub struct TachoMotorDevice {
     stop_action: ReadWriteAttributeFile<StopAction>,
 }
 
-impl TachoMotorDevice {
+impl TachoMotor {
     pub fn command(&self, command: Command) -> io::Result<()> {
         self.command.set_value(command)
     }
