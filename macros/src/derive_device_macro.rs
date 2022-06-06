@@ -20,13 +20,12 @@ pub fn derive_device_impl(raw_input: TokenStream2) -> TokenStream2 {
 struct Device {
     ident: syn::Ident,
     generics: syn::Generics,
-    class: String,
     data: darling::ast::Data<(), DeviceField>,
 }
 
 impl ToTokens for Device {
     fn to_tokens(&self, tokens: &mut TokenStream2) {
-        let Self { ident, generics, class, data } = self;
+        let Self { ident, generics, data } = self;
         let (impl_generics, ty_generics, where_clause) =
             generics.split_for_impl();
         let field_inits = data.clone().take_struct().unwrap().fields;
@@ -34,17 +33,12 @@ impl ToTokens for Device {
             impl #impl_generics ev3robot::device::Device
                 for #ident #ty_generics #where_clause
             {
-                const CLASS: &'static str = #class;
-
-                fn try_connect<S>(__device_name: S)
-                    -> ev3robot::device::ConnectionResult<Self>
+                fn open<P>(device_node: P) -> ev3robot::__anyhow::Result<Self>
                 where
-                    S: ::std::convert::AsRef<::std::ffi::OsStr>
+                    P: ::std::convert::AsRef<::std::path::Path>
                 {
-                    ev3robot::device::check_device_exists(
-                        Self::CLASS,
-                        __device_name.as_ref(),
-                    )?;
+                    use ev3robot::__anyhow::Context;
+                    let device_node = device_node.as_ref();
                     Ok(Self {#(#field_inits),*})
                 }
             }
@@ -69,15 +63,9 @@ impl ToTokens for DeviceField {
             .or_else(|| ident.as_ref().map(ToString::to_string));
         tokens.extend(quote! {
             #ident: ev3robot::device::Attribute::of_device(
-                Self::CLASS,
-                &__device_name,
+                device_node,
                 #name,
-            ).map_err(|err| {
-                ev3robot::device::ConnectionError::new_unexpected_with_context(
-                    err,
-                    ::std::format!("Error in attribute {}", #name)
-                )
-            })?
+            ).context(format!("Error in attribute {}", #name))?
         })
     }
 }

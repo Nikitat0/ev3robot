@@ -1,13 +1,9 @@
 mod attribute;
-mod error;
 
-use std::ffi::OsStr;
+use std::path::Path;
 
 pub use attribute::*;
-pub use error::*;
 
 pub trait Device: Sized {
-    const CLASS: &'static str;
-
-    fn try_connect<S: AsRef<OsStr>>(name: S) -> ConnectionResult<Self>;
+    fn open<P: AsRef<Path>>(device_node: P) -> anyhow::Result<Self>;
 }

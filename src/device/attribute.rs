@@ -1,6 +1,5 @@
 use std::cell::RefCell;
 use std::error::Error as StdError;
-use std::ffi::OsStr;
 use std::fmt::{Debug, Formatter};
 use std::fs::{File, OpenOptions};
 use std::io::{Error, ErrorKind, Read, Result, Seek, SeekFrom, Write};
@@ -8,11 +7,12 @@ use std::marker::PhantomData;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
+use tap::prelude::*;
+
 pub trait Attribute: Sized {
     fn of_device(
-        device_class: impl AsRef<OsStr>,
-        device_name: impl AsRef<OsStr>,
-        attr_name: &'static str,
+        device_node: impl AsRef<Path>,
+        name: &'static str,
     ) -> Result<Self>;
 }
 
@@ -41,15 +41,13 @@ impl<T, const R: bool, const W: bool> AttributeFile<T, R, W> {
 
 impl<T, const R: bool, const W: bool> Attribute for AttributeFile<T, R, W> {
     fn of_device(
-        device_class: impl AsRef<OsStr>,
-        device_name: impl AsRef<OsStr>,
-        attr_name: &'static str,
+        device_node: impl AsRef<Path>,
+        name: &'static str,
     ) -> Result<Self> {
-        let mut path = PathBuf::from("/sys/class");
-        path.push(device_class.as_ref());
-        path.push(device_name.as_ref());
-        path.push(attr_name);
-        Self::open(path)
+        Self::open(PathBuf::new().tap_mut(|it| {
+            it.push(device_node);
+            it.push(name);
+        }))
     }
 }
 
@@ -88,11 +86,9 @@ where
     T::Err: Into<Box<dyn StdError + Send + Sync>>,
 {
     fn of_device(
-        device_class: impl AsRef<OsStr>,
-        device_name: impl AsRef<OsStr>,
-        attr_name: &'static str,
+        device_node: impl AsRef<Path>,
+        name: &'static str,
     ) -> Result<Self> {
-        ReadOnlyAttributeFile::of_device(device_class, device_name, attr_name)?
-            .value()
+        ReadOnlyAttributeFile::of_device(device_node, name)?.value()
     }
 }
