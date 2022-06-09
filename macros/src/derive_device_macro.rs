@@ -1,35 +1,43 @@
 use darling::FromDeriveInput;
 use proc_macro2::TokenStream as TokenStream2;
-use quote::{quote, ToTokens};
+use quote::quote;
+use syn::parse_quote;
 
 pub fn derive_device_impl(raw_input: TokenStream2) -> TokenStream2 {
     let input = match syn::parse2(raw_input) {
         Ok(input) => input,
         Err(err) => return err.into_compile_error(),
     };
-    let device_impl = match Device::from_derive_input(&input) {
+    let device_struct = match DeviceStruct::from_derive_input(&input) {
         Ok(device_impl) => device_impl,
         Err(err) => return err.write_errors(),
     };
+    let device_impl = device_struct.gen_impl();
 
     quote! { #device_impl }
 }
 
 #[derive(FromDeriveInput)]
 #[darling(attributes(ev3robot), supports(struct_named))]
-struct Device {
+struct DeviceStruct {
     ident: syn::Ident,
     generics: syn::Generics,
     data: darling::ast::Data<(), DeviceField>,
 }
 
-impl ToTokens for Device {
-    fn to_tokens(&self, tokens: &mut TokenStream2) {
+impl DeviceStruct {
+    fn gen_impl(&self) -> TokenStream2 {
         let Self { ident, generics, data } = self;
         let (impl_generics, ty_generics, where_clause) =
             generics.split_for_impl();
-        let field_inits = data.clone().take_struct().unwrap().fields;
-        tokens.extend(quote! {
+        let fields_inits = data
+            .as_ref()
+            .take_struct()
+            .unwrap()
+            .into_iter()
+            .map(DeviceField::gen_field_init);
+
+        quote! {
             impl #impl_generics ev3robot::device::Device
                 for #ident #ty_generics #where_clause
             {
@@ -39,33 +47,37 @@ impl ToTokens for Device {
                 {
                     use ev3robot::__anyhow::Context;
                     let device_node = device_node.as_ref();
-                    Ok(Self {#(#field_inits),*})
+                    Ok(Self {#(#fields_inits),*})
                 }
             }
-        })
+        }
     }
 }
 
-#[derive(Clone, FromField)]
+#[derive(FromField)]
 #[darling(attributes(ev3robot))]
 struct DeviceField {
     ident: Option<syn::Ident>,
     #[darling(default)]
-    name: Option<String>,
+    attr_name: Option<String>,
 }
 
-impl ToTokens for DeviceField {
-    fn to_tokens(&self, tokens: &mut TokenStream2) {
-        let Self { name, ident } = self;
-        let name = name
-            .as_ref()
-            .map(Clone::clone)
-            .or_else(|| ident.as_ref().map(ToString::to_string));
-        tokens.extend(quote! {
-            #ident: ev3robot::device::Attribute::of_device(
+impl DeviceField {
+    fn gen_field_init(&self) -> TokenStream2 {
+        let ident = &self.ident;
+        let init_expr = self.gen_field_init_expr();
+        quote! {#ident: #init_expr}
+    }
+
+    fn gen_field_init_expr(&self) -> syn::Expr {
+        let field_name = self.ident.as_ref().unwrap().to_string();
+        let attr_name =
+            self.attr_name.as_ref().map(String::as_str).unwrap_or(&field_name);
+        parse_quote! {
+            ev3robot::device::Attribute::of_device(
                 device_node,
-                #name,
-            ).context(format!("Error in attribute {}", #name))?
-        })
+                #attr_name,
+            ).context(format!("Error in attribute {}", #attr_name))?
+        }
     }
 }
