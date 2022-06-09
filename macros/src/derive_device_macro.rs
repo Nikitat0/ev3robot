@@ -23,11 +23,13 @@ struct DeviceStruct {
     ident: syn::Ident,
     generics: syn::Generics,
     data: darling::ast::Data<(), DeviceField>,
+    #[darling(multiple, rename = "apply")]
+    fns_to_apply: Vec<syn::Expr>,
 }
 
 impl DeviceStruct {
     fn gen_impl(&self) -> TokenStream2 {
-        let Self { ident, generics, data } = self;
+        let Self { ident, generics, data, fns_to_apply } = self;
         let (impl_generics, ty_generics, where_clause) =
             generics.split_for_impl();
         let fields_inits = data
@@ -36,6 +38,9 @@ impl DeviceStruct {
             .unwrap()
             .into_iter()
             .map(DeviceField::gen_field_init);
+        let applications = fns_to_apply.into_iter().map(|it| -> syn::Stmt {
+            parse_quote! {#it(&mut device)?;}
+        });
 
         quote! {
             impl #impl_generics ev3robot::device::Device
@@ -47,7 +52,9 @@ impl DeviceStruct {
                 {
                     use ev3robot::__anyhow::Context;
                     let device_node = device_node.as_ref();
-                    Ok(Self {#(#fields_inits),*})
+                    let mut device = Self {#(#fields_inits),*};
+                    #(#applications)*
+                    Ok(device)
                 }
             }
         }
