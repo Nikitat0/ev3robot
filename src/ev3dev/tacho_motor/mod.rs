@@ -16,6 +16,7 @@ use crate::device::{
 };
 
 #[derive(Debug, Device)]
+#[ev3robot(apply = "TachoMotor::reset_motor")]
 pub struct TachoMotor {
     command: WriteOnlyAttributeFile<Command>,
     count_per_rot: u32,
@@ -29,6 +30,12 @@ pub struct TachoMotor {
     speed: ReadOnlyAttributeFile<i32>,
     speed_sp: ReadWriteAttributeFile<i32>,
     stop_action: ReadWriteAttributeFile<StopAction>,
+}
+
+impl TachoMotor {
+    fn reset_motor(&mut self) -> io::Result<()> {
+        self.command(Command::Reset)
+    }
 }
 
 impl TachoMotor {
