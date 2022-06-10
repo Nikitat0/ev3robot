@@ -18,7 +18,7 @@ pub fn derive_device_impl(raw_input: TokenStream2) -> TokenStream2 {
 }
 
 #[derive(FromDeriveInput)]
-#[darling(attributes(ev3robot), supports(struct_named))]
+#[darling(attributes(device), supports(struct_named))]
 struct DeviceStruct {
     ident: syn::Ident,
     generics: syn::Generics,

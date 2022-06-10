@@ -17,7 +17,7 @@ use crate::device::{
 
 #[derive(Debug, Device, FindableDevice)]
 #[findable_device(class = "tacho-motor")]
-#[ev3robot(apply = "TachoMotor::reset_motor")]
+#[device(apply = "TachoMotor::reset_motor")]
 pub struct TachoMotor {
     command: WriteOnlyAttributeFile<Command>,
     count_per_rot: u32,
