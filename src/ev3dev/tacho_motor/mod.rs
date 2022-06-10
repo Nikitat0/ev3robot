@@ -15,7 +15,8 @@ use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
 
-#[derive(Debug, Device)]
+#[derive(Debug, Device, FindableDevice)]
+#[findable_device(class = "tacho-motor")]
 #[ev3robot(apply = "TachoMotor::reset_motor")]
 pub struct TachoMotor {
     command: WriteOnlyAttributeFile<Command>,
