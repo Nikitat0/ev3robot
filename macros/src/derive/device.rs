@@ -3,7 +3,7 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::parse_quote;
 
-pub fn derive_device_impl(raw_input: TokenStream2) -> TokenStream2 {
+pub fn derive(raw_input: TokenStream2) -> TokenStream2 {
     let input = match syn::parse2(raw_input) {
         Ok(input) => input,
         Err(err) => return err.into_compile_error(),
