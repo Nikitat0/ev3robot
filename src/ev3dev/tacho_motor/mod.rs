@@ -22,8 +22,8 @@ use crate::device::{
 pub struct TachoMotor {
     command: WriteOnlyAttributeFile<Command>,
     count_per_rot: u32,
-    duty_cycle: ReadOnlyAttributeFile<i8>,
-    duty_cycle_sp: ReadWriteAttributeFile<i8>,
+    duty_cycle: ReadOnlyAttributeFile<DutyCycle>,
+    duty_cycle_sp: ReadWriteAttributeFile<DutyCycle>,
     polarity: ReadWriteAttributeFile<Polarity>,
     position: ReadWriteAttributeFile<i32>,
     position_sp: ReadWriteAttributeFile<i32>,
@@ -49,15 +49,15 @@ impl TachoMotor {
         self.count_per_rot
     }
 
-    pub fn duty_cycle(&self) -> io::Result<i8> {
+    pub fn duty_cycle(&self) -> io::Result<DutyCycle> {
         self.duty_cycle.value()
     }
 
-    pub fn duty_cycle_sp(&self) -> io::Result<i8> {
+    pub fn duty_cycle_sp(&self) -> io::Result<DutyCycle> {
         self.duty_cycle_sp.value()
     }
 
-    pub fn set_duty_cycle_sp(&self, duty_cycle: i8) -> io::Result<()> {
+    pub fn set_duty_cycle_sp(&self, duty_cycle: DutyCycle) -> io::Result<()> {
         self.duty_cycle_sp.set_value(duty_cycle)
     }
 
