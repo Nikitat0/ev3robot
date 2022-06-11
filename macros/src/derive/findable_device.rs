@@ -36,7 +36,7 @@ impl FindableDeviceStruct {
                 parse_quote! {
                     let device_nodes =
                         device_nodes .filter(|node| {
-                            ev3robot::device::utils::device_node_driver_name(
+                            crate::device::utils::device_node_driver_name(
                                 node
                             ).map(|it| it == #driver).unwrap_or_default()
                         });
@@ -44,14 +44,14 @@ impl FindableDeviceStruct {
             });
 
         quote! {
-            impl #impl_generics ev3robot::device::FindableDevice
+            impl #impl_generics crate::device::FindableDevice
                 for #ident #ty_generics #where_clause
             {
                 fn find_device_nodes() -> ::std::vec::Vec<::std::path::PathBuf>
                 {
                     use ::std::iter::Iterator;
                     let device_nodes =
-                        ev3robot::device::utils::find_device_nodes_by_class(
+                        crate::device::utils::find_device_nodes_by_class(
                             #class
                         ).into_iter();
                     #filter_by_driver

@@ -10,7 +10,6 @@ pub use polarity::*;
 pub use state::*;
 pub use stop_action::*;
 
-use crate as ev3robot;
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };

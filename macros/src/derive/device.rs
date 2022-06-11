@@ -43,14 +43,14 @@ impl DeviceStruct {
         });
 
         quote! {
-            impl #impl_generics ev3robot::device::Device
+            impl #impl_generics crate::device::Device
                 for #ident #ty_generics #where_clause
             {
-                fn open<P>(device_node: P) -> ev3robot::__anyhow::Result<Self>
+                fn open<P>(device_node: P) -> crate::__anyhow::Result<Self>
                 where
                     P: ::std::convert::AsRef<::std::path::Path>
                 {
-                    use ev3robot::__anyhow::Context;
+                    use crate::__anyhow::Context;
                     let device_node = device_node.as_ref();
                     let mut device = Self {#(#fields_inits),*};
                     #(#applications)*
@@ -81,7 +81,7 @@ impl DeviceField {
         let attr_name =
             self.attr_name.as_ref().map(String::as_str).unwrap_or(&field_name);
         parse_quote! {
-            ev3robot::device::Attribute::of_device(
+            crate::device::Attribute::of_device(
                 device_node,
                 #attr_name,
             ).context(format!("Error in attribute {}", #attr_name))?
