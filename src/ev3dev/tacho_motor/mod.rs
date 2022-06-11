@@ -1,4 +1,5 @@
 mod command;
+mod duty_cycle;
 mod polarity;
 mod state;
 mod stop_action;
@@ -6,6 +7,7 @@ mod stop_action;
 use std::io;
 
 pub use command::*;
+pub use duty_cycle::*;
 pub use polarity::*;
 pub use state::*;
 pub use stop_action::*;
