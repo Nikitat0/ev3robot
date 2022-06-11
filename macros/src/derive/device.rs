@@ -62,7 +62,7 @@ impl DeviceStruct {
 }
 
 #[derive(FromField)]
-#[darling(attributes(ev3robot))]
+#[darling(attributes(device))]
 struct DeviceField {
     ident: Option<syn::Ident>,
     #[darling(default)]
