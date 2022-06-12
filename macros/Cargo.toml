@@ -2,6 +2,15 @@
 name = "ev3robot_macros"
 version = "0.1.0"
 edition = "2021"
+authors = ["Nikitat0"]
+license = "MIT"
+
+description = """
+Proc-macro crate for ev3robot.
+Don't depend on this crate directly.
+"""
+
+repository = "https://github.com/Nikitat0/ev3robot"
 
 [lib]
 proc-macro = true

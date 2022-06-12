@@ -2,6 +2,14 @@
 name = "ev3robot"
 version = "0.1.0"
 edition = "2021"
+authors = ["Nikitat0"]
+license = "MIT"
+
+description = "Rust library for ev3dev"
+categories = ["api-bindings", "embedded", "hardware-support"]
+keywords = ["ev3", "ev3dev", "lego", "mindstorms"]
+
+repository = "https://github.com/Nikitat0/ev3robot"
 
 [workspace]
 members = ["macros"]
