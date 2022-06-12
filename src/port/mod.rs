@@ -60,3 +60,12 @@ impl Display for Port {
         f.write_str(self.as_ref())
     }
 }
+
+macro_rules! port {
+    ($ident:ident, $port:literal) => {
+        pub const $ident: $crate::port::Port =
+            $crate::port::Port::new_static($port);
+    };
+}
+
+pub(crate) use port;
