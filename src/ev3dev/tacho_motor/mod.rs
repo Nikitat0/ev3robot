@@ -41,81 +41,87 @@ impl TachoMotor {
 }
 
 impl TachoMotor {
-    pub fn command(&self, command: Command) -> io::Result<()> {
+    pub fn command(&mut self, command: Command) -> io::Result<()> {
         self.command.set_value(command)
     }
 
-    pub fn count_per_rot(&self) -> u32 {
+    pub fn count_per_rot(&mut self) -> u32 {
         self.count_per_rot
     }
 
-    pub fn duty_cycle(&self) -> io::Result<DutyCycle> {
+    pub fn duty_cycle(&mut self) -> io::Result<DutyCycle> {
         self.duty_cycle.value()
     }
 
-    pub fn duty_cycle_sp(&self) -> io::Result<DutyCycle> {
+    pub fn duty_cycle_sp(&mut self) -> io::Result<DutyCycle> {
         self.duty_cycle_sp.value()
     }
 
-    pub fn set_duty_cycle_sp(&self, duty_cycle: DutyCycle) -> io::Result<()> {
+    pub fn set_duty_cycle_sp(
+        &mut self,
+        duty_cycle: DutyCycle,
+    ) -> io::Result<()> {
         self.duty_cycle_sp.set_value(duty_cycle)
     }
 
-    pub fn polarity(&self) -> io::Result<Polarity> {
+    pub fn polarity(&mut self) -> io::Result<Polarity> {
         self.polarity.value()
     }
 
-    pub fn set_polarity(&self, polarity: Polarity) -> io::Result<()> {
+    pub fn set_polarity(&mut self, polarity: Polarity) -> io::Result<()> {
         self.polarity.set_value(polarity)
     }
 
-    pub fn position(&self) -> io::Result<i32> {
+    pub fn position(&mut self) -> io::Result<i32> {
         self.position.value()
     }
 
-    pub fn set_position(&self, pos: i32) -> io::Result<()> {
+    pub fn set_position(&mut self, pos: i32) -> io::Result<()> {
         self.position.set_value(pos)
     }
 
-    pub fn position_sp(&self) -> io::Result<i32> {
+    pub fn position_sp(&mut self) -> io::Result<i32> {
         self.position_sp.value()
     }
 
-    pub fn set_position_sp(&self, pos: i32) -> io::Result<()> {
+    pub fn set_position_sp(&mut self, pos: i32) -> io::Result<()> {
         self.position_sp.set_value(pos)
     }
 
-    pub fn state(&self) -> io::Result<State> {
+    pub fn state(&mut self) -> io::Result<State> {
         self.state.value()
     }
 
-    pub fn max_speed(&self) -> u32 {
+    pub fn max_speed(&mut self) -> u32 {
         self.max_speed
     }
 
-    pub fn speed(&self) -> io::Result<i32> {
+    pub fn speed(&mut self) -> io::Result<i32> {
         self.speed.value()
     }
 
-    pub fn speed_sp(&self) -> io::Result<i32> {
+    pub fn speed_sp(&mut self) -> io::Result<i32> {
         self.speed_sp.value()
     }
 
-    pub fn set_speed_sp(&self, speed: i32) -> io::Result<()> {
+    pub fn set_speed_sp(&mut self, speed: i32) -> io::Result<()> {
         self.speed_sp.set_value(speed)
     }
 
-    pub fn stop_action(&self) -> io::Result<StopAction> {
+    pub fn stop_action(&mut self) -> io::Result<StopAction> {
         self.stop_action.value()
     }
 
-    pub fn set_stop_action(&self, stop_action: StopAction) -> io::Result<()> {
+    pub fn set_stop_action(
+        &mut self,
+        stop_action: StopAction,
+    ) -> io::Result<()> {
         self.stop_action.set_value(stop_action)
     }
 }
 
 pub trait AsTachoMotor {
-    fn as_tacho_motor(&self) -> &TachoMotor;
+    fn as_tacho_motor(&mut self) -> &TachoMotor;
 }
 
 macro_rules! tacho_motor {
@@ -137,7 +143,7 @@ macro_rules! tacho_motor {
 
         impl crate::ev3dev::tacho_motor::AsTachoMotor for $ident {
             fn as_tacho_motor(
-                &self,
+                &mut self,
             ) -> &crate::ev3dev::tacho_motor::TachoMotor {
                 &self.0
             }

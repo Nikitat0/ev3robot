@@ -1,4 +1,3 @@
-use std::cell::RefCell;
 use std::error::Error as StdError;
 use std::fmt::{Debug, Formatter};
 use std::fs::{File, OpenOptions};
@@ -17,7 +16,7 @@ pub trait DeviceAttribute: Sized {
 }
 
 pub struct AttributeFile<T, const READABLE: bool, const WRITEABLE: bool> {
-    file: RefCell<File>,
+    file: File,
     phantom: PhantomData<*const T>,
 }
 
@@ -31,15 +30,15 @@ pub type ReadWriteAttributeFile<T> = AttributeFile<T, true, true>;
 impl<T, const R: bool, const W: bool> AttributeFile<T, R, W> {
     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self> {
         Ok(AttributeFile {
-            file: RefCell::new(
-                OpenOptions::new().read(R).write(W).open(path.as_ref())?,
-            ),
+            file: OpenOptions::new().read(R).write(W).open(path.as_ref())?,
             phantom: Default::default(),
         })
     }
 }
 
-impl<T, const R: bool, const W: bool> DeviceAttribute for AttributeFile<T, R, W> {
+impl<T, const R: bool, const W: bool> DeviceAttribute
+    for AttributeFile<T, R, W>
+{
     fn of_device(
         device_node: impl AsRef<Path>,
         name: &'static str,
@@ -55,11 +54,10 @@ impl<T: FromStr, const W: bool> ReadableAttributeFile<T, W>
 where
     T::Err: Into<Box<dyn StdError + Send + Sync>>,
 {
-    pub fn value(&self) -> Result<T> {
-        let mut file = self.file.borrow_mut();
+    pub fn value(&mut self) -> Result<T> {
         let mut raw = String::new();
-        file.seek(SeekFrom::Start(0))?;
-        file.read_to_string(&mut raw)?;
+        self.file.seek(SeekFrom::Start(0))?;
+        self.file.read_to_string(&mut raw)?;
         raw.trim_end()
             .parse()
             .map_err(|err: T::Err| Error::new(ErrorKind::InvalidData, err))
@@ -67,17 +65,16 @@ where
 }
 
 impl<T: ToString, const R: bool> WriteableAttributeFile<T, R> {
-    pub fn set_value(&self, value: T) -> Result<()> {
-        let mut file = self.file.borrow_mut();
-        file.seek(SeekFrom::Start(0))?;
-        file.write_all(value.to_string().as_bytes())?;
+    pub fn set_value(&mut self, value: T) -> Result<()> {
+        self.file.seek(SeekFrom::Start(0))?;
+        self.file.write_all(value.to_string().as_bytes())?;
         Ok(())
     }
 }
 
 impl<T, const R: bool, const W: bool> Debug for AttributeFile<T, R, W> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_tuple("AttributeFile").field(&self.file.borrow()).finish()
+        f.debug_tuple("AttributeFile").field(&self.file).finish()
     }
 }
 
