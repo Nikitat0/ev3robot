@@ -117,3 +117,32 @@ impl TachoMotor {
 pub trait AsTachoMotor {
     fn as_tacho_motor(&self) -> &TachoMotor;
 }
+
+macro_rules! tacho_motor {
+    ($ident:ident, $driver:literal) => {
+        #[derive(Debug, FindableDevice)]
+        #[findable_device(class = "tacho-motor", driver = $driver)]
+        pub struct $ident($crate::ev3dev::tacho_motor::TachoMotor);
+
+        impl $crate::device::Device for $ident {
+            fn open<P>(device_node: P) -> ::anyhow::Result<Self>
+            where
+                P: ::std::convert::AsRef<::std::path::Path>,
+            {
+                Ok(Self($crate::ev3dev::tacho_motor::TachoMotor::open(
+                    device_node,
+                )?))
+            }
+        }
+
+        impl crate::ev3dev::tacho_motor::AsTachoMotor for $ident {
+            fn as_tacho_motor(
+                &self,
+            ) -> &crate::ev3dev::tacho_motor::TachoMotor {
+                &self.0
+            }
+        }
+    };
+}
+
+pub(crate) use tacho_motor;
