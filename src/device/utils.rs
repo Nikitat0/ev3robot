@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use tap::prelude::*;
 
-use super::Attribute;
+use super::DeviceAttribute;
 use crate::port::Port;
 
 pub fn find_device_nodes_by_class(class: &str) -> Vec<PathBuf> {

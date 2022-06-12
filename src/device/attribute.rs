@@ -9,7 +9,7 @@ use std::str::FromStr;
 
 use tap::prelude::*;
 
-pub trait Attribute: Sized {
+pub trait DeviceAttribute: Sized {
     fn of_device(
         device_node: impl AsRef<Path>,
         name: &'static str,
@@ -39,7 +39,7 @@ impl<T, const R: bool, const W: bool> AttributeFile<T, R, W> {
     }
 }
 
-impl<T, const R: bool, const W: bool> Attribute for AttributeFile<T, R, W> {
+impl<T, const R: bool, const W: bool> DeviceAttribute for AttributeFile<T, R, W> {
     fn of_device(
         device_node: impl AsRef<Path>,
         name: &'static str,
@@ -81,7 +81,7 @@ impl<T, const R: bool, const W: bool> Debug for AttributeFile<T, R, W> {
     }
 }
 
-impl<T: FromStr> Attribute for T
+impl<T: FromStr> DeviceAttribute for T
 where
     T::Err: Into<Box<dyn StdError + Send + Sync>>,
 {

@@ -81,7 +81,7 @@ impl DeviceField {
         let attr_name =
             self.attr_name.as_ref().map(String::as_str).unwrap_or(&field_name);
         parse_quote! {
-            crate::device::Attribute::of_device(
+            crate::device::DeviceAttribute::of_device(
                 device_node,
                 #attr_name,
             ).context(format!("Error in attribute {}", #attr_name))?
