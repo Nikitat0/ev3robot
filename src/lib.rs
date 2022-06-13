@@ -5,6 +5,7 @@ pub mod device;
 pub mod ev3;
 pub mod ev3dev;
 pub mod find;
+pub mod mode;
 pub mod port;
 
 #[doc(hidden)]
