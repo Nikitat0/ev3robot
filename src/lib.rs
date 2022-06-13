@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate ev3robot_macros;
 
+pub mod action;
 pub mod device;
 pub mod ev3;
 pub mod ev3dev;
