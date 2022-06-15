@@ -20,18 +20,18 @@ use crate::device::{
 #[findable_device(class = "tacho-motor")]
 #[device(apply = "TachoMotor::reset_motor")]
 pub struct TachoMotor {
-    command: WriteOnlyAttributeFile<Command>,
+    command: WriteOnlyAttributeFile,
     count_per_rot: u32,
-    duty_cycle: ReadOnlyAttributeFile<DutyCycle>,
-    duty_cycle_sp: ReadWriteAttributeFile<DutyCycle>,
-    polarity: ReadWriteAttributeFile<Polarity>,
-    position: ReadWriteAttributeFile<i32>,
-    position_sp: ReadWriteAttributeFile<i32>,
+    duty_cycle: ReadOnlyAttributeFile,
+    duty_cycle_sp: ReadWriteAttributeFile,
+    polarity: ReadWriteAttributeFile,
+    position: ReadWriteAttributeFile,
+    position_sp: ReadWriteAttributeFile,
     max_speed: u32,
-    state: ReadOnlyAttributeFile<State>,
-    speed: ReadOnlyAttributeFile<i32>,
-    speed_sp: ReadWriteAttributeFile<i32>,
-    stop_action: ReadWriteAttributeFile<StopAction>,
+    state: ReadOnlyAttributeFile,
+    speed: ReadOnlyAttributeFile,
+    speed_sp: ReadWriteAttributeFile,
+    stop_action: ReadWriteAttributeFile,
 }
 
 impl TachoMotor {
