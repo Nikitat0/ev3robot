@@ -120,10 +120,6 @@ impl TachoMotor {
     }
 }
 
-pub trait AsTachoMotor {
-    fn as_tacho_motor(&mut self) -> &TachoMotor;
-}
-
 macro_rules! tacho_motor {
     ($ident:ident, $driver:literal) => {
         #[derive(Debug, FindableDevice)]
@@ -138,14 +134,6 @@ macro_rules! tacho_motor {
                 Ok(Self($crate::ev3dev::tacho_motor::TachoMotor::open(
                     device_node,
                 )?))
-            }
-        }
-
-        impl crate::ev3dev::tacho_motor::AsTachoMotor for $ident {
-            fn as_tacho_motor(
-                &mut self,
-            ) -> &crate::ev3dev::tacho_motor::TachoMotor {
-                &self.0
             }
         }
     };
