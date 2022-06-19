@@ -1,17 +1,14 @@
 mod command;
-mod duty_cycle;
-mod polarity;
 mod state;
 mod stop_action;
-
 use std::io;
 
 pub use command::*;
-pub use duty_cycle::*;
-pub use polarity::*;
 pub use state::*;
 pub use stop_action::*;
 
+use super::duty_cycle::*;
+use super::polarity::*;
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
@@ -124,16 +121,14 @@ macro_rules! tacho_motor {
     ($ident:ident, $driver:literal) => {
         #[derive(Debug, FindableDevice)]
         #[findable_device(class = "tacho-motor", driver = $driver)]
-        pub struct $ident($crate::ev3dev::tacho_motor::TachoMotor);
+        pub struct $ident($crate::motor::tacho::TachoMotor);
 
         impl $crate::device::Device for $ident {
             fn open<P>(device_node: P) -> ::anyhow::Result<Self>
             where
                 P: ::std::convert::AsRef<::std::path::Path>,
             {
-                Ok(Self($crate::ev3dev::tacho_motor::TachoMotor::open(
-                    device_node,
-                )?))
+                Ok(Self($crate::motor::tacho::TachoMotor::open(device_node)?))
             }
         }
     };
