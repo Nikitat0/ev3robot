@@ -116,22 +116,3 @@ impl TachoMotor {
         self.stop_action.set_value(stop_action)
     }
 }
-
-macro_rules! tacho_motor {
-    ($ident:ident, $driver:literal) => {
-        #[derive(Debug, FindableDevice)]
-        #[findable_device(class = "tacho-motor", driver = $driver)]
-        pub struct $ident($crate::motor::tacho::TachoMotor);
-
-        impl $crate::device::Device for $ident {
-            fn open<P>(device_node: P) -> ::anyhow::Result<Self>
-            where
-                P: ::std::convert::AsRef<::std::path::Path>,
-            {
-                Ok(Self($crate::motor::tacho::TachoMotor::open(device_node)?))
-            }
-        }
-    };
-}
-
-pub(crate) use tacho_motor;
