@@ -15,7 +15,6 @@ use crate::device::{
 
 #[derive(Debug, Device, FindableDevice)]
 #[findable_device(class = "tacho-motor")]
-#[device(apply = "TachoMotor::reset_motor")]
 pub struct TachoMotor {
     command: WriteOnlyAttributeFile,
     count_per_rot: u32,
@@ -29,12 +28,6 @@ pub struct TachoMotor {
     speed: ReadOnlyAttributeFile,
     speed_sp: ReadWriteAttributeFile,
     stop_action: ReadWriteAttributeFile,
-}
-
-impl TachoMotor {
-    fn reset_motor(&mut self) -> io::Result<()> {
-        self.command(Command::Reset)
-    }
 }
 
 impl TachoMotor {
