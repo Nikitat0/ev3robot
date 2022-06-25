@@ -4,8 +4,11 @@ use std::result::Result as StdResult;
 use std::str::FromStr;
 use std::sync::Arc;
 
-#[derive(Clone, Eq)]
-pub enum Port {
+#[derive(Clone)]
+pub struct Port(Inner);
+
+#[derive(Clone)]
+enum Inner {
     Static(&'static str),
     Dynamic(Arc<str>),
 }
@@ -16,13 +19,13 @@ impl Port {
     }
 
     pub const fn new_static(name: &'static str) -> Port {
-        Port::Static(name)
+        Port(Inner::Static(name))
     }
 }
 
 impl<T: Into<Arc<str>>> From<T> for Port {
     fn from(v: T) -> Self {
-        Port::Dynamic(v.into())
+        Port(Inner::Dynamic(v.into()))
     }
 }
 
@@ -40,11 +43,13 @@ impl PartialEq for Port {
     }
 }
 
+impl Eq for Port {}
+
 impl AsRef<str> for Port {
     fn as_ref(&self) -> &str {
         match self {
-            Port::Static(port) => port,
-            Port::Dynamic(port) => port,
+            Port(Inner::Static(port)) => port,
+            Port(Inner::Dynamic(port)) => port,
         }
     }
 }
