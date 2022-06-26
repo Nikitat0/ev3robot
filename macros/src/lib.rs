@@ -4,15 +4,17 @@ extern crate darling;
 use proc_macro::TokenStream;
 
 mod derive;
+use derive::derive;
 
 macro_rules! pub_derive_macro {
-    ($module_name:ident as $macro_name:ident) => {
-        #[proc_macro_derive($macro_name, attributes($module_name))]
-        pub fn $module_name(input: TokenStream) -> TokenStream {
-            derive::$module_name::derive(input.into()).into()
+    ($name:ident, $helper_attr:ident) => {
+        #[allow(non_snake_case)]
+        #[proc_macro_derive($name, attributes($helper_attr))]
+        pub fn $name(input: TokenStream) -> TokenStream {
+            derive::<derive::$name>(input)
         }
     };
 }
 
-pub_derive_macro!(device as Device);
-pub_derive_macro!(findable_device as FindableDevice);
+pub_derive_macro!(Device, device);
+pub_derive_macro!(FindableDevice, findable_device);

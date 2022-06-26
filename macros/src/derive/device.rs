@@ -1,25 +1,11 @@
-use darling::FromDeriveInput;
+use darling::{FromDeriveInput, ToTokens};
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::parse_quote;
 
-pub fn derive(raw_input: TokenStream2) -> TokenStream2 {
-    let input = match syn::parse2(raw_input) {
-        Ok(input) => input,
-        Err(err) => return err.into_compile_error(),
-    };
-    let device_struct = match DeviceStruct::from_derive_input(&input) {
-        Ok(device_impl) => device_impl,
-        Err(err) => return err.write_errors(),
-    };
-    let device_impl = device_struct.gen_impl();
-
-    quote! { #device_impl }
-}
-
 #[derive(FromDeriveInput)]
 #[darling(attributes(device), supports(struct_named))]
-struct DeviceStruct {
+pub struct Device {
     ident: syn::Ident,
     generics: syn::Generics,
     data: darling::ast::Data<(), DeviceField>,
@@ -27,8 +13,8 @@ struct DeviceStruct {
     fns_to_apply: Vec<syn::Expr>,
 }
 
-impl DeviceStruct {
-    fn gen_impl(&self) -> TokenStream2 {
+impl ToTokens for Device {
+    fn to_tokens(&self, tokens: &mut TokenStream2) {
         let Self { ident, generics, data, fns_to_apply } = self;
         let (impl_generics, ty_generics, where_clause) =
             generics.split_for_impl();
@@ -42,7 +28,7 @@ impl DeviceStruct {
             parse_quote! {#it(&mut device)?;}
         });
 
-        quote! {
+        tokens.extend(quote! {
             impl #impl_generics crate::device::Device
                 for #ident #ty_generics #where_clause
             {
@@ -57,7 +43,7 @@ impl DeviceStruct {
                     Ok(device)
                 }
             }
-        }
+        })
     }
 }
 

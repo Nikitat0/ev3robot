@@ -1,28 +1,14 @@
 use std::ops::Not;
 
 use darling::util::Flag;
-use darling::FromDeriveInput;
+use darling::{FromDeriveInput, ToTokens};
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::parse_quote;
 
-pub fn derive(raw_input: TokenStream2) -> TokenStream2 {
-    let input = match syn::parse2(raw_input) {
-        Ok(input) => input,
-        Err(err) => return err.into_compile_error(),
-    };
-    let device_struct = match FindableDeviceStruct::from_derive_input(&input) {
-        Ok(device_impl) => device_impl,
-        Err(err) => return err.write_errors(),
-    };
-    let device_impl = device_struct.gen_impl();
-
-    quote! { #device_impl }
-}
-
 #[derive(FromDeriveInput)]
 #[darling(attributes(findable_device))]
-struct FindableDeviceStruct {
+pub struct FindableDevice {
     ident: syn::Ident,
     generics: syn::Generics,
     class: String,
@@ -31,8 +17,8 @@ struct FindableDeviceStruct {
     no_findable_by_port_impl: Flag,
 }
 
-impl FindableDeviceStruct {
-    fn gen_impl(&self) -> TokenStream2 {
+impl ToTokens for FindableDevice {
+    fn to_tokens(&self, tokens: &mut TokenStream2) {
         let Self {
             ident,
             generics,
@@ -108,7 +94,7 @@ impl FindableDeviceStruct {
                 }
             });
 
-        quote! {
+        tokens.extend(quote! {
             impl #impl_generics crate::device::FindableDevice
                 for #ident #ty_generics #where_clause
             {
@@ -126,6 +112,6 @@ impl FindableDeviceStruct {
 
             #findable_impl
             #findable_by_port_impl
-        }
+        })
     }
 }
