@@ -13,11 +13,11 @@ impl FromStr for Polarity {
     type Err = ParsePolarityError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        return Ok(match s {
+        Ok(match s {
             "normal" => Polarity::Normal,
             "inversed" => Polarity::Inversed,
             _ => return Err(ParsePolarityError),
-        });
+        })
     }
 }
 
