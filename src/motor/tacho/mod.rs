@@ -10,6 +10,7 @@ use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
 
+#[allow(unused)]
 #[derive(Debug, Device, FindableDevice)]
 #[findable_device(class = "tacho-motor")]
 pub struct TachoMotor {
