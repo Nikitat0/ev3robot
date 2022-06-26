@@ -1,5 +1,5 @@
 use darling::{FromDeriveInput, ToTokens};
-use proc_macro2::TokenStream as TokenStream2;
+use proc_macro2::TokenStream;
 use quote::quote;
 use syn::parse_quote;
 
@@ -14,7 +14,7 @@ pub struct Device {
 }
 
 impl ToTokens for Device {
-    fn to_tokens(&self, tokens: &mut TokenStream2) {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { ident, generics, data, fns_to_apply } = self;
         let (impl_generics, ty_generics, where_clause) =
             generics.split_for_impl();
@@ -23,8 +23,8 @@ impl ToTokens for Device {
             .take_struct()
             .unwrap()
             .into_iter()
-            .map(DeviceField::gen_field_init);
-        let applications = fns_to_apply.into_iter().map(|it| -> syn::Stmt {
+            .map(DeviceField::init);
+        let applications = fns_to_apply.iter().map(|it| -> syn::Stmt {
             parse_quote! {#it(&mut device)?;}
         });
 
@@ -56,16 +56,15 @@ struct DeviceField {
 }
 
 impl DeviceField {
-    fn gen_field_init(&self) -> TokenStream2 {
+    fn init(&self) -> TokenStream {
         let ident = &self.ident;
-        let init_expr = self.gen_field_init_expr();
+        let init_expr = self.init_expr();
         quote! {#ident: #init_expr}
     }
 
-    fn gen_field_init_expr(&self) -> syn::Expr {
+    fn init_expr(&self) -> syn::Expr {
         let field_name = self.ident.as_ref().unwrap().to_string();
-        let attr_name =
-            self.attr_name.as_ref().map(String::as_str).unwrap_or(&field_name);
+        let attr_name = self.attr_name.as_deref().unwrap_or(&field_name);
         parse_quote! {
             crate::device::DeviceAttribute::of_device(
                 device_node,
