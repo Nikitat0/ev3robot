@@ -1,4 +1,4 @@
 > **WORK IN PROGRESS**
 
 # ev3robot
-ev3robot is a Rust library for [](https://ev3dev.org)
+ev3robot is a Rust library for [ev3dev](https://ev3dev.org)
