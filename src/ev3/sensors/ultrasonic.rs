@@ -13,6 +13,11 @@ impl UltrasonicSensor {
         self.mode.set_value("US-DIST-CM")?;
         Ok(CmMeasurements(self))
     }
+
+    pub fn measure_inches(&mut self) -> anyhow::Result<InchMeasurements> {
+        self.mode.set_value("US-DIST-IN")?;
+        Ok(InchMeasurements(self))
+    }
 }
 
 pub struct CmMeasurements<'a>(&'a mut UltrasonicSensor);
@@ -23,6 +28,18 @@ impl CmMeasurements<'_> {
             .value
             .value::<u32>()
             .map(|mm| mm as f32 / 10.0)
+            .map_err(Into::into)
+    }
+}
+
+pub struct InchMeasurements<'a>(&'a mut UltrasonicSensor);
+
+impl InchMeasurements<'_> {
+    pub fn inches(&mut self) -> anyhow::Result<f32> {
+        self.0
+            .value
+            .value::<u32>()
+            .map(|it| it as f32 / 10.0)
             .map_err(Into::into)
     }
 }
