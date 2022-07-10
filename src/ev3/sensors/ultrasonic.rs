@@ -9,22 +9,20 @@ pub struct UltrasonicSensor {
 }
 
 impl UltrasonicSensor {
-    pub fn measure_distance_in_metric_system(
-        &mut self,
-    ) -> anyhow::Result<MeasurementsInMetricSystem> {
+    pub fn measure_cm(&mut self) -> anyhow::Result<CmMeasurements> {
         self.mode.set_value("US-DIST-CM")?;
-        Ok(MeasurementsInMetricSystem(self))
+        Ok(CmMeasurements(self))
     }
 }
 
-pub struct MeasurementsInMetricSystem<'a>(&'a mut UltrasonicSensor);
+pub struct CmMeasurements<'a>(&'a mut UltrasonicSensor);
 
-impl MeasurementsInMetricSystem<'_> {
-    pub fn mm(&mut self) -> anyhow::Result<i32> {
-        Ok(self.0.value.value()?)
-    }
-
-    pub fn cm(&mut self) -> anyhow::Result<i32> {
-        self.mm().map(|it| it / 10)
+impl CmMeasurements<'_> {
+    pub fn cm(&mut self) -> anyhow::Result<f32> {
+        self.0
+            .value
+            .value::<u32>()
+            .map(|mm| mm as f32 / 10.0)
+            .map_err(Into::into)
     }
 }
