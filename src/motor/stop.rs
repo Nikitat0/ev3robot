@@ -1,7 +1,7 @@
 use derive_more::Display;
 
-pub trait Stop<T> {
-    fn stop(_: T);
+pub trait Stop<StopAction> {
+    fn stop(stop_action: StopAction);
 }
 
 macro_rules! stop_action {
