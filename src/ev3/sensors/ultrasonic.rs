@@ -13,17 +13,17 @@ pub struct UltrasonicSensor {
 impl UltrasonicSensor {
     pub fn measure_cm(&mut self) -> anyhow::Result<CmMeter> {
         self.mode.set_value("US-DIST-CM")?;
-        Ok(CmMeter(self))
+        Ok(CmMeter { ultrasonic_sensor: self })
     }
 
     pub fn measure_inches(&mut self) -> anyhow::Result<InchMeter> {
         self.mode.set_value("US-DIST-IN")?;
-        Ok(InchMeter(self))
+        Ok(InchMeter { ultrasonic_sensor: self })
     }
 
     pub fn listen(&mut self) -> anyhow::Result<UltrasoundListener> {
         self.mode.set_value("US-LISTEN")?;
-        Ok(UltrasoundListener(self))
+        Ok(UltrasoundListener { ultrasonic_sensor: self })
     }
 
     fn value<T: FromStr>(&mut self) -> anyhow::Result<T>
@@ -34,19 +34,28 @@ impl UltrasonicSensor {
     }
 }
 
-pub struct CmMeter<'a>(&'a mut UltrasonicSensor);
+macro_rules! ultrasonic_sensor_mode {
+    ($name:ident) => {
+        #[derive(Debug)]
+        pub struct $name<'a> {
+            ultrasonic_sensor: &'a mut UltrasonicSensor,
+        }
+    };
+}
+
+ultrasonic_sensor_mode!(CmMeter);
+ultrasonic_sensor_mode!(InchMeter);
+ultrasonic_sensor_mode!(UltrasoundListener);
 
 impl CmMeter<'_> {
     pub fn cm(&mut self) -> anyhow::Result<f32> {
-        self.0.value().map(div_by_10)
+        self.ultrasonic_sensor.value().map(div_by_10)
     }
 }
 
-pub struct InchMeter<'a>(&'a mut UltrasonicSensor);
-
 impl InchMeter<'_> {
     pub fn inches(&mut self) -> anyhow::Result<f32> {
-        self.0.value().map(div_by_10)
+        self.ultrasonic_sensor.value().map(div_by_10)
     }
 }
 
@@ -54,10 +63,8 @@ fn div_by_10(n: u32) -> f32 {
     n as f32 / 10_f32
 }
 
-pub struct UltrasoundListener<'a>(&'a mut UltrasonicSensor);
-
 impl UltrasoundListener<'_> {
     pub fn is_ultrasound_present(&mut self) -> anyhow::Result<bool> {
-        self.0.value().map(|present: char| present == '1')
+        self.ultrasonic_sensor.value().map(|present: char| present == '1')
     }
 }
