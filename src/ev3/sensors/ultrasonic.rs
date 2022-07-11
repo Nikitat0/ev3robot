@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use crate::device::{ReadOnlyAttributeFile, ReadWriteAttributeFile};
 
 #[derive(Debug, Device, FindableDevice)]
@@ -23,17 +25,20 @@ impl UltrasonicSensor {
         self.mode.set_value("US-LISTEN")?;
         Ok(UltrasoundListener(self))
     }
+
+    fn value<T: FromStr>(&mut self) -> anyhow::Result<T>
+    where
+        T::Err: Into<Box<dyn std::error::Error + Send + Sync>>,
+    {
+        self.value.value().map_err(Into::into)
+    }
 }
 
 pub struct CmMeter<'a>(&'a mut UltrasonicSensor);
 
 impl CmMeter<'_> {
     pub fn cm(&mut self) -> anyhow::Result<f32> {
-        self.0
-            .value
-            .value::<u32>()
-            .map(|mm| mm as f32 / 10.0)
-            .map_err(Into::into)
+        self.0.value().map(div_by_10)
     }
 }
 
@@ -41,22 +46,18 @@ pub struct InchMeter<'a>(&'a mut UltrasonicSensor);
 
 impl InchMeter<'_> {
     pub fn inches(&mut self) -> anyhow::Result<f32> {
-        self.0
-            .value
-            .value::<u32>()
-            .map(|it| it as f32 / 10.0)
-            .map_err(Into::into)
+        self.0.value().map(div_by_10)
     }
+}
+
+fn div_by_10(n: u32) -> f32 {
+    n as f32 / 10_f32
 }
 
 pub struct UltrasoundListener<'a>(&'a mut UltrasonicSensor);
 
 impl UltrasoundListener<'_> {
     pub fn is_ultrasound_present(&mut self) -> anyhow::Result<bool> {
-        self.0
-            .value
-            .value::<char>()
-            .map(|present| present == '1')
-            .map_err(Into::into)
+        self.0.value().map(|present: char| present == '1')
     }
 }
