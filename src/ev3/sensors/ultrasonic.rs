@@ -9,14 +9,14 @@ pub struct UltrasonicSensor {
 }
 
 impl UltrasonicSensor {
-    pub fn measure_cm(&mut self) -> anyhow::Result<CmMeasurements> {
+    pub fn measure_cm(&mut self) -> anyhow::Result<CmMeter> {
         self.mode.set_value("US-DIST-CM")?;
-        Ok(CmMeasurements(self))
+        Ok(CmMeter(self))
     }
 
-    pub fn measure_inches(&mut self) -> anyhow::Result<InchMeasurements> {
+    pub fn measure_inches(&mut self) -> anyhow::Result<InchMeter> {
         self.mode.set_value("US-DIST-IN")?;
-        Ok(InchMeasurements(self))
+        Ok(InchMeter(self))
     }
 
     pub fn listen(&mut self) -> anyhow::Result<UlrasoundListener> {
@@ -25,9 +25,9 @@ impl UltrasonicSensor {
     }
 }
 
-pub struct CmMeasurements<'a>(&'a mut UltrasonicSensor);
+pub struct CmMeter<'a>(&'a mut UltrasonicSensor);
 
-impl CmMeasurements<'_> {
+impl CmMeter<'_> {
     pub fn cm(&mut self) -> anyhow::Result<f32> {
         self.0
             .value
@@ -37,9 +37,9 @@ impl CmMeasurements<'_> {
     }
 }
 
-pub struct InchMeasurements<'a>(&'a mut UltrasonicSensor);
+pub struct InchMeter<'a>(&'a mut UltrasonicSensor);
 
-impl InchMeasurements<'_> {
+impl InchMeter<'_> {
     pub fn inches(&mut self) -> anyhow::Result<f32> {
         self.0
             .value
