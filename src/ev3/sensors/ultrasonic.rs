@@ -18,6 +18,11 @@ impl UltrasonicSensor {
         self.mode.set_value("US-DIST-IN")?;
         Ok(InchMeasurements(self))
     }
+
+    pub fn listen(&mut self) -> anyhow::Result<UlrasoundListener> {
+        self.mode.set_value("US-LISTEN")?;
+        Ok(UlrasoundListener(self))
+    }
 }
 
 pub struct CmMeasurements<'a>(&'a mut UltrasonicSensor);
@@ -40,6 +45,18 @@ impl InchMeasurements<'_> {
             .value
             .value::<u32>()
             .map(|it| it as f32 / 10.0)
+            .map_err(Into::into)
+    }
+}
+
+pub struct UlrasoundListener<'a>(&'a mut UltrasonicSensor);
+
+impl UlrasoundListener<'_> {
+    pub fn is_ultrasound_present(&mut self) -> anyhow::Result<bool> {
+        self.0
+            .value
+            .value::<char>()
+            .map(|present| present == '1')
             .map_err(Into::into)
     }
 }
