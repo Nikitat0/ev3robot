@@ -19,9 +19,9 @@ impl UltrasonicSensor {
         Ok(InchMeter(self))
     }
 
-    pub fn listen(&mut self) -> anyhow::Result<UlrasoundListener> {
+    pub fn listen(&mut self) -> anyhow::Result<UltrasoundListener> {
         self.mode.set_value("US-LISTEN")?;
-        Ok(UlrasoundListener(self))
+        Ok(UltrasoundListener(self))
     }
 }
 
@@ -49,9 +49,9 @@ impl InchMeter<'_> {
     }
 }
 
-pub struct UlrasoundListener<'a>(&'a mut UltrasonicSensor);
+pub struct UltrasoundListener<'a>(&'a mut UltrasonicSensor);
 
-impl UlrasoundListener<'_> {
+impl UltrasoundListener<'_> {
     pub fn is_ultrasound_present(&mut self) -> anyhow::Result<bool> {
         self.0
             .value
