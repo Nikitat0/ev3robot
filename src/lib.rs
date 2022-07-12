@@ -5,6 +5,7 @@ pub mod device;
 pub mod ev3;
 pub mod find;
 pub mod motor;
+pub mod percentage;
 pub mod port;
 
 #[doc(hidden)]
