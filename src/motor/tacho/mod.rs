@@ -4,6 +4,7 @@ mod state;
 pub use command::*;
 pub use state::*;
 
+use super::*;
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
@@ -25,3 +26,26 @@ pub struct TachoMotor {
     speed_sp: ReadWriteAttributeFile,
     stop_action: ReadWriteAttributeFile,
 }
+
+impl TachoMotor {
+    fn set_stop_action<S: TachoMotorStopAction>(
+        &mut self,
+        stop_action: S,
+    ) -> anyhow::Result<()> {
+        Ok(self.stop_action.set_value(stop_action)?)
+    }
+}
+
+impl<S: TachoMotorStopAction> Stop<S> for TachoMotor {
+    fn stop(&mut self, stop_action: S) -> anyhow::Result<()> {
+        self.set_stop_action(stop_action)?;
+        self.command.set_value("stop")?;
+        Ok(())
+    }
+}
+
+trait TachoMotorStopAction: ToString {}
+
+impl TachoMotorStopAction for Brake {}
+impl TachoMotorStopAction for Coast {}
+impl TachoMotorStopAction for Hold {}
