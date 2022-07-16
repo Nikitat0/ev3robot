@@ -1,8 +1,10 @@
 mod command;
 mod state;
+mod units;
 
 pub use command::*;
 pub use state::*;
+pub use units::*;
 
 use super::*;
 use crate::device::{
