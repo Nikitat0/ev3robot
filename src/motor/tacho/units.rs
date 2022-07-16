@@ -39,7 +39,7 @@ macro_rules! unit {
     (
         $(BREAK_RECURSION)?
         $(#[$outer:meta])*
-        pub struct $name:ident($repr:ty);
+        pub struct $name:ident($inner:ty);
     ) => {
          $(#[$outer])*
          #[derive(
@@ -53,9 +53,9 @@ macro_rules! unit {
             LowerExp,
             UpperExp,
         )]
-        pub struct $name($repr);
+        pub struct $name($inner);
 
-        impl From<$name> for $repr {
+        impl From<$name> for $inner {
             fn from(tacho_counts: $name) -> Self {
                 tacho_counts.0
             }
