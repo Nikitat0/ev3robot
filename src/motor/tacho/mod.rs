@@ -28,24 +28,29 @@ pub struct TachoMotor {
 }
 
 impl TachoMotor {
-    fn set_stop_action<S: TachoMotorStopAction>(
+    fn stop<StopAction: ToString>(
         &mut self,
-        stop_action: S,
+        stop_action: StopAction,
     ) -> anyhow::Result<()> {
-        Ok(self.stop_action.set_value(stop_action)?)
-    }
-}
-
-impl<S: TachoMotorStopAction> Stop<S> for TachoMotor {
-    fn stop(&mut self, stop_action: S) -> anyhow::Result<()> {
-        self.set_stop_action(stop_action)?;
+        self.stop_action.set_value(stop_action)?;
         self.command.set_value("stop")?;
         Ok(())
     }
 }
 
-trait TachoMotorStopAction: ToString {}
+macro_rules! tacho_motor_stop_action {
+    ($stop_action:ty) => {
+        impl Stop<$stop_action> for TachoMotor {
+            fn stop(
+                &mut self,
+                stop_action: $stop_action,
+            ) -> anyhow::Result<()> {
+                self.stop(stop_action)
+            }
+        }
+    };
+}
 
-impl TachoMotorStopAction for Brake {}
-impl TachoMotorStopAction for Coast {}
-impl TachoMotorStopAction for Hold {}
+tacho_motor_stop_action!(Brake);
+tacho_motor_stop_action!(Coast);
+tacho_motor_stop_action!(Hold);
