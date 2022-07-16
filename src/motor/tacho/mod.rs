@@ -30,10 +30,7 @@ pub struct TachoMotor {
 }
 
 impl TachoMotor {
-    fn stop<StopAction: ToString>(
-        &mut self,
-        stop_action: StopAction,
-    ) -> anyhow::Result<()> {
+    fn stop(&mut self, stop_action: String) -> anyhow::Result<()> {
         self.stop_action.set_value(stop_action)?;
         self.command.set_value("stop")?;
         Ok(())
@@ -47,7 +44,7 @@ macro_rules! tacho_motor_stop_action {
                 &mut self,
                 stop_action: $stop_action,
             ) -> anyhow::Result<()> {
-                self.stop(stop_action)
+                self.stop(stop_action.to_string())
             }
         }
     };
