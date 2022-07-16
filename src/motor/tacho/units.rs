@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Formatter};
+
 use derive_more::*;
 
 macro_rules! unit {
@@ -43,7 +45,6 @@ macro_rules! unit {
          #[derive(
             Clone,
             Copy,
-            Debug,
             PartialEq,
             PartialOrd,
             Constructor,
@@ -63,13 +64,28 @@ macro_rules! unit {
 }
 
 unit! {
+    #[derive(Debug)]
     pub struct TachoCounts(i32);
 }
+
 unit! {
     pub struct Degrees(i32);
 }
+
+impl Debug for Degrees {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}°", self.0)
+    }
+}
+
 unit! {
     pub struct Revolutions(f32);
+}
+
+impl Debug for Revolutions {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} rev", self.0)
+    }
 }
 
 const DEGREES_PER_REVOLUTION: f32 = 360.0;
