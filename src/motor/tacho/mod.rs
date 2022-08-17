@@ -1,8 +1,10 @@
 mod command;
 mod state;
+mod stop_action;
 
 pub use command::*;
 pub use state::*;
+pub use stop_action::*;
 
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
