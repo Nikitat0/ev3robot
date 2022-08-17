@@ -1,7 +1,7 @@
 use std::fmt::{self, Display, Formatter};
 use std::str::FromStr;
 
-use thiserror::Error;
+use anyhow::bail;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StopAction {
@@ -11,22 +11,17 @@ pub enum StopAction {
 }
 
 impl FromStr for StopAction {
-    type Err = ParseStopActionError;
+    type Err = anyhow::Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> anyhow::Result<Self> {
         Ok(match s {
             "coast" => StopAction::Coast,
             "brake" => StopAction::Brake,
             "hold" => StopAction::Hold,
-            _ => return Err(ParseStopActionError),
+            _ => bail!("provided string was not `coast`, `brake` or `hold`"),
         })
     }
 }
-
-#[derive(Clone, Debug, Error, PartialEq, Eq)]
-#[non_exhaustive]
-#[error("provided string was not `coast`, `brake` or `hold`")]
-pub struct ParseStopActionError;
 
 impl Display for StopAction {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {

@@ -7,7 +7,7 @@ use tap::prelude::*;
 use super::DeviceAttribute;
 use crate::port::Port;
 
-pub fn find_device_nodes_by_class(class: &str) -> Vec<PathBuf> {
+pub fn device_nodes_by_class(class: &str) -> Vec<PathBuf> {
     let class_path = PathBuf::from("/sys/class").tap_mut(|it| it.push(class));
     read_dir(class_path)
         .map(|dir_entries| {

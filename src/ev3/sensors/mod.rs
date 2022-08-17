@@ -1,3 +1,3 @@
-mod ultrasonic;
+pub mod ultrasonic_sensor;
 
-pub use ultrasonic::*;
+pub use ultrasonic_sensor::UltrasonicSensor;

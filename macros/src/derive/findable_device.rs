@@ -39,7 +39,7 @@ impl FindableDevice {
                 {
                     use ::std::iter::Iterator;
                     let device_nodes =
-                        crate::device::utils::find_device_nodes_by_class(
+                        crate::device::utils::device_nodes_by_class(
                             #class
                         ).into_iter();
                     #filter_by_driver
