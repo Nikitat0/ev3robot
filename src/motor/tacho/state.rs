@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
+use anyhow::bail;
 use bitflags::bitflags;
-use thiserror::Error;
 
 bitflags! {
     #[derive(Default)]
@@ -15,9 +15,9 @@ bitflags! {
 }
 
 impl FromStr for State {
-    type Err = ParseStateError;
+    type Err = anyhow::Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> anyhow::Result<Self> {
         s.split_whitespace()
             .map(|flag| {
                 Ok(match flag {
@@ -27,19 +27,10 @@ impl FromStr for State {
                     "overloaded" => State::OVERLOADED,
                     "stalled" => State::STALLED,
                     invalid_flag => {
-                        return Err(ParseStateError {
-                            invalid_flag: invalid_flag.to_string(),
-                        })
+                        bail!("invalid flag `{}`", invalid_flag)
                     }
                 })
             })
             .collect()
     }
-}
-
-#[derive(Debug, Error)]
-#[non_exhaustive]
-#[error("invalid flag `{}`", invalid_flag)]
-pub struct ParseStateError {
-    invalid_flag: String,
 }
