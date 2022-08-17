@@ -57,3 +57,15 @@ impl AmbientLightMeter<'_> {
         self.color_sensor.value()
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Color {
+    None,
+    Black,
+    Blue,
+    Green,
+    Yellow,
+    Red,
+    White,
+    Brown,
+}
