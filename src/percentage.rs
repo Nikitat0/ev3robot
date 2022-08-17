@@ -1,4 +1,4 @@
-use std::fmt::{Debug, Formatter};
+use std::fmt::{self, Debug, Formatter};
 use std::str::FromStr;
 
 use derive_more::*;
@@ -22,11 +22,21 @@ macro_rules! percentage {
         )]
         pub struct $name($repr);
 
+        impl $name {
+            pub fn new(percent: $repr) -> anyhow::Result<Self> {
+                percent.try_into()
+            }
+
+            pub fn to_fraction(self) -> f32 {
+                self.0 as f32 / 100_f32
+            }
+        }
+
         impl TryFrom<$repr> for $name {
             type Error = anyhow::Error;
 
             fn try_from(value: $repr) -> Result<Self, Self::Error> {
-                if let 0..=100 = value {
+                if let $range = value {
                     Ok($name(value))
                 } else {
                     anyhow::bail!("invalid percentage")
@@ -37,13 +47,13 @@ macro_rules! percentage {
         impl FromStr for $name {
             type Err = anyhow::Error;
 
-            fn from_str(s: &str) -> Result<Self, Self::Err> {
+            fn from_str(s: &str) -> anyhow::Result<Self> {
                 s.parse::<$repr>()?.try_into()
             }
         }
 
         impl Debug for $name {
-            fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
                 write!(f, "{}%", self.0)
             }
         }
@@ -51,12 +61,6 @@ macro_rules! percentage {
         impl From<$name> for $repr {
             fn from($name(percent): $name) -> Self {
                 percent
-            }
-        }
-
-        impl From<$name> for f32 {
-            fn from($name(percent): $name) -> Self {
-                percent as f32 / 100_f32
             }
         }
     };
