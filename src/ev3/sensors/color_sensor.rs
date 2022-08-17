@@ -19,6 +19,13 @@ impl ColorSensor {
         Ok(ReflectedLightMeter { color_sensor: self })
     }
 
+    pub fn measure_ambient_light(
+        &mut self,
+    ) -> anyhow::Result<AmbientLightMeter> {
+        self.mode.set_value("COL-AMBIENT")?;
+        Ok(AmbientLightMeter { color_sensor: self })
+    }
+
     fn value<T: FromStr>(&mut self) -> anyhow::Result<T>
     where
         T::Err: Into<Box<dyn std::error::Error + Send + Sync>>,
@@ -37,9 +44,16 @@ macro_rules! color_sensor_mode {
 }
 
 color_sensor_mode!(ReflectedLightMeter);
+color_sensor_mode!(AmbientLightMeter);
 
 impl ReflectedLightMeter<'_> {
     pub fn reflected_light_intensity(&mut self) -> anyhow::Result<Percentage> {
+        self.color_sensor.value()
+    }
+}
+
+impl AmbientLightMeter<'_> {
+    pub fn ambient_light_intensity(&mut self) -> anyhow::Result<Percentage> {
         self.color_sensor.value()
     }
 }
