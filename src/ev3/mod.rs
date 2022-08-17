@@ -1,3 +1,7 @@
-pub mod motors;
-pub mod ports;
-pub mod sensors;
+mod motors;
+mod ports;
+mod sensors;
+
+pub use motors::*;
+pub use ports::*;
+pub use sensors::*;
