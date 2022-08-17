@@ -26,9 +26,7 @@ impl FromStr for State {
                     "holding" => State::HOLDING,
                     "overloaded" => State::OVERLOADED,
                     "stalled" => State::STALLED,
-                    invalid_flag => {
-                        bail!("invalid flag `{}`", invalid_flag)
-                    }
+                    invalid_flag => bail!("invalid flag `{}`", invalid_flag),
                 })
             })
             .collect()
