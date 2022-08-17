@@ -1,4 +1,7 @@
+use std::str::FromStr;
+
 use crate::device::{ReadOnlyAttributeFile, ReadWriteAttributeFile};
+use crate::percentage::Percentage;
 
 #[derive(Debug, Device, FindableDevice)]
 #[findable_device(class = "lego-sensor", driver = "lego-ev3-color")]
@@ -6,4 +9,37 @@ pub struct ColorSensor {
     mode: ReadWriteAttributeFile,
     #[device(attr_name = "value0")]
     value: ReadOnlyAttributeFile,
+}
+
+impl ColorSensor {
+    pub fn measure_reflected_light(
+        &mut self,
+    ) -> anyhow::Result<ReflectedLightMeter> {
+        self.mode.set_value("COL-REFLECT")?;
+        Ok(ReflectedLightMeter { color_sensor: self })
+    }
+
+    fn value<T: FromStr>(&mut self) -> anyhow::Result<T>
+    where
+        T::Err: Into<Box<dyn std::error::Error + Send + Sync>>,
+    {
+        self.value.value().map_err(Into::into)
+    }
+}
+
+macro_rules! color_sensor_mode {
+    ($name:ident) => {
+        #[derive(Debug)]
+        pub struct $name<'a> {
+            color_sensor: &'a mut ColorSensor,
+        }
+    };
+}
+
+color_sensor_mode!(ReflectedLightMeter);
+
+impl ReflectedLightMeter<'_> {
+    pub fn reflected_light_intensity(&mut self) -> anyhow::Result<Percentage> {
+        self.color_sensor.value()
+    }
 }
