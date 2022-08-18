@@ -1,6 +1,7 @@
 use std::fmt::{self, Debug, Formatter};
 use std::str::FromStr;
 
+use anyhow::anyhow;
 use derive_more::*;
 
 macro_rules! percentage {
@@ -35,11 +36,11 @@ macro_rules! percentage {
         impl TryFrom<$repr> for $name {
             type Error = anyhow::Error;
 
-            fn try_from(value: $repr) -> Result<Self, Self::Error> {
+            fn try_from(value: $repr) -> anyhow::Result<Self> {
                 if let $range = value {
                     Ok($name(value))
                 } else {
-                    anyhow::bail!("invalid percentage")
+                    Err(anyhow!("invalid percentage"))
                 }
             }
         }
