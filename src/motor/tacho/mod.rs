@@ -1,10 +1,12 @@
 mod command;
 mod state;
 mod stop_action;
+mod tacho_counts;
 
 pub use command::*;
 pub use state::*;
 pub use stop_action::*;
+pub use tacho_counts::*;
 
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
