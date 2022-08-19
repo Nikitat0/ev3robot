@@ -33,7 +33,7 @@ pub struct TachoMotor {
 }
 
 pub trait TachoMotorInterface {
-    fn command(&mut self, command: Command) -> anyhow::Result<()>;
+    fn command(&mut self, value: Command) -> anyhow::Result<()>;
     fn count_per_rot(&self) -> TachoCounts;
     fn duty_cycle(&mut self) -> anyhow::Result<SignedPercentage>;
     fn duty_cycle_sp(&mut self) -> anyhow::Result<SignedPercentage>;

@@ -11,10 +11,10 @@ pub enum Command {
     Reset,
 }
 
-impl AsRef<str> for Command {
-    fn as_ref(&self) -> &str {
+impl Display for Command {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use Command::*;
-        match self {
+        f.write_str(match self {
             RunForever => "run-forever",
             RunToAbsPos => "run-to-abs-pos",
             RunToRelPos => "run-to-rel-pos",
@@ -22,12 +22,6 @@ impl AsRef<str> for Command {
             RunDirect => "run-direct",
             Stop => "stop",
             Reset => "reset",
-        }
-    }
-}
-
-impl Display for Command {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.as_ref())
+        })
     }
 }
