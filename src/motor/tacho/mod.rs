@@ -58,7 +58,7 @@ pub trait TachoMotorInterface {
 
 impl TachoMotorInterface for TachoMotor {
     fn command(&mut self, value: Command) -> anyhow::Result<()> {
-        self.command.set_value(value).map_err(Into::into)
+        self.command.set_value(value).map_err(anyhow::Error::new)
     }
 
     fn count_per_rot(&self) -> TachoCounts {
@@ -66,42 +66,42 @@ impl TachoMotorInterface for TachoMotor {
     }
 
     fn duty_cycle(&mut self) -> anyhow::Result<SignedPercentage> {
-        self.duty_cycle.value().map_err(Into::into)
+        self.duty_cycle.value().map_err(anyhow::Error::new)
     }
 
     fn duty_cycle_sp(&mut self) -> anyhow::Result<SignedPercentage> {
-        self.duty_cycle_sp.value().map_err(Into::into)
+        self.duty_cycle_sp.value().map_err(anyhow::Error::new)
     }
 
     fn set_duty_cycle_sp(
         &mut self,
         value: SignedPercentage,
     ) -> anyhow::Result<()> {
-        self.duty_cycle_sp.set_value(value).map_err(Into::into)
+        self.duty_cycle_sp.set_value(value).map_err(anyhow::Error::new)
     }
 
     fn polarity(&mut self) -> anyhow::Result<Polarity> {
-        self.polarity.value().map_err(Into::into)
+        self.polarity.value().map_err(anyhow::Error::new)
     }
 
     fn set_polarity(&mut self, value: Polarity) -> anyhow::Result<()> {
-        self.polarity.set_value(value).map_err(Into::into)
+        self.polarity.set_value(value).map_err(anyhow::Error::new)
     }
 
     fn position(&mut self) -> anyhow::Result<TachoCounts> {
-        self.position.value().map_err(Into::into)
+        self.position.value().map_err(anyhow::Error::new)
     }
 
     fn set_position(&mut self, value: TachoCounts) -> anyhow::Result<()> {
-        self.position.set_value(value).map_err(Into::into)
+        self.position.set_value(value).map_err(anyhow::Error::new)
     }
 
     fn position_sp(&mut self) -> anyhow::Result<TachoCounts> {
-        self.position_sp.value().map_err(Into::into)
+        self.position_sp.value().map_err(anyhow::Error::new)
     }
 
     fn set_position_sp(&mut self, value: TachoCounts) -> anyhow::Result<()> {
-        self.position_sp.set_value(value).map_err(Into::into)
+        self.position_sp.set_value(value).map_err(anyhow::Error::new)
     }
 
     fn max_speed(&self) -> TachoCounts {
@@ -109,26 +109,26 @@ impl TachoMotorInterface for TachoMotor {
     }
 
     fn state(&mut self) -> anyhow::Result<State> {
-        self.state.value().map_err(Into::into)
+        self.state.value().map_err(anyhow::Error::new)
     }
 
     fn speed(&mut self) -> anyhow::Result<TachoCounts> {
-        self.speed.value().map_err(Into::into)
+        self.speed.value().map_err(anyhow::Error::new)
     }
 
     fn speed_sp(&mut self) -> anyhow::Result<TachoCounts> {
-        self.speed_sp.value().map_err(Into::into)
+        self.speed_sp.value().map_err(anyhow::Error::new)
     }
 
     fn set_speed_sp(&mut self, value: TachoCounts) -> anyhow::Result<()> {
-        self.speed_sp.set_value(value).map_err(Into::into)
+        self.speed_sp.set_value(value).map_err(anyhow::Error::new)
     }
 
     fn stop_action(&mut self) -> anyhow::Result<StopAction> {
-        self.stop_action.value().map_err(Into::into)
+        self.stop_action.value().map_err(anyhow::Error::new)
     }
 
     fn set_stop_action(&mut self, value: StopAction) -> anyhow::Result<()> {
-        self.stop_action.set_value(value).map_err(Into::into)
+        self.stop_action.set_value(value).map_err(anyhow::Error::new)
     }
 }
