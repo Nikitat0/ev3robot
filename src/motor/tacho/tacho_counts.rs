@@ -2,22 +2,15 @@ use std::fmt::{self, Display};
 
 use derive_more::*;
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Constructor,
-    From,
-    FromStr,
-)]
-pub struct TachoCounts(pub u32);
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, From, FromStr)]
+pub struct TachoCounts(u32);
 
 impl TachoCounts {
-    fn value(self) -> u32 {
+    pub fn new(value: u32) -> TachoCounts {
+        TachoCounts(value)
+    }
+
+    pub fn value(self) -> u32 {
         self.into()
     }
 }
