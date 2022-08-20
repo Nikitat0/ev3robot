@@ -28,8 +28,12 @@ macro_rules! percentage {
                 percent.try_into()
             }
 
+            pub fn value(self) -> $repr {
+                self.into()
+            }
+
             pub fn to_fraction(self) -> f32 {
-                self.0 as f32 / 100_f32
+                self.value() as f32 / 100_f32
             }
         }
 
@@ -55,7 +59,7 @@ macro_rules! percentage {
 
         impl Debug for $name {
             fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-                write!(f, "{}%", self.0)
+                write!(f, "{}%", self.value())
             }
         }
 
