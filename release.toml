@@ -1,0 +1,6 @@
+shared-version = true
+consolidate-commits = true
+consolidate-pushes = true
+pre-release-commit-message = "Publish {{version}}"
+tag-message = ""
+tag-prefix = ""
