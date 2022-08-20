@@ -3,14 +3,14 @@ use std::fmt::{self, Display};
 use derive_more::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, From, FromStr)]
-pub struct TachoCounts(u32);
+pub struct TachoCounts(i32);
 
 impl TachoCounts {
-    pub fn new(value: u32) -> TachoCounts {
+    pub fn new(value: i32) -> TachoCounts {
         TachoCounts(value)
     }
 
-    pub fn value(self) -> u32 {
+    pub fn value(self) -> i32 {
         self.into()
     }
 }
@@ -21,7 +21,7 @@ impl Display for TachoCounts {
     }
 }
 
-impl From<TachoCounts> for u32 {
+impl From<TachoCounts> for i32 {
     fn from(TachoCounts(value): TachoCounts) -> Self {
         value
     }
