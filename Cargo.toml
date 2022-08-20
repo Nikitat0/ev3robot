@@ -1,6 +1,6 @@
 [package]
 name = "ev3robot"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["Nikitat0"]
 license = "MIT"
@@ -18,6 +18,6 @@ members = ["macros"]
 anyhow = "1"
 bitflags = "1"
 derive_more = "0.99"
-ev3robot_macros = { path = "macros", version = "0.2.1" }
+ev3robot_macros = { path = "macros", version = "0.3.0" }
 tap = "1"
 thiserror = "1"
