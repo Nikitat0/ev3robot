@@ -79,3 +79,9 @@ impl From<Percentage> for SignedPercentage {
         SignedPercentage(value as i8)
     }
 }
+
+impl SignedPercentage {
+    pub fn abs(self) -> Percentage {
+        Percentage(self.value().abs() as u8)
+    }
+}
