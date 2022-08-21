@@ -1,3 +1,5 @@
+use std::fmt::{self, Debug, Formatter};
+
 use derive_more::*;
 
 macro_rules! unit {
@@ -32,4 +34,15 @@ macro_rules! unit {
 unit! {
     #[derive(Debug, Eq, Ord, FromStr)]
     pub struct TachoCounts(i32);
+}
+
+unit! {
+    #[derive(Eq, Ord)]
+    pub struct Degrees(i32);
+}
+
+impl Debug for Degrees {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}°", self.value())
+    }
 }
