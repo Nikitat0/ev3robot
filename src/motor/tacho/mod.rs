@@ -1,12 +1,12 @@
 mod command;
 mod state;
 mod stop_action;
-mod tacho_counts;
+mod units;
 
 pub use command::*;
 pub use state::*;
 pub use stop_action::*;
-pub use tacho_counts::*;
+pub use units::*;
 
 use super::Polarity;
 use crate::device::{
