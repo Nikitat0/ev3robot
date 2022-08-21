@@ -41,8 +41,25 @@ unit! {
     pub struct Degrees(i32);
 }
 
+unit! {
+    #[derive(Debug)]
+    pub struct Revolutions(f32);
+}
+
 impl Debug for Degrees {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}°", self.value())
+    }
+}
+
+impl From<Degrees> for Revolutions {
+    fn from(degrees: Degrees) -> Self {
+        Revolutions(degrees.value() as f32 / 360_f32)
+    }
+}
+
+impl From<Revolutions> for Degrees {
+    fn from(revolutions: Revolutions) -> Self {
+        Degrees((revolutions.value() * 360_f32) as i32)
     }
 }
