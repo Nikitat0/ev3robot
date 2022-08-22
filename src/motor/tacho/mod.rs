@@ -10,7 +10,7 @@ pub use state::*;
 pub use stop_action::*;
 pub use units::*;
 
-use super::{IsHolding, IsRunning, Polarity, Run};
+use super::{Brake, Coast, Hold, IsHolding, IsRunning, Polarity, Run};
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
@@ -152,5 +152,26 @@ impl IsRunning for TachoMotor {
 impl IsHolding for TachoMotor {
     fn is_holding(&mut self) -> anyhow::Result<bool> {
         self.state().map(|it| it.contains(State::HOLDING))
+    }
+}
+
+impl Coast for TachoMotor {
+    fn coast(&mut self) -> anyhow::Result<()> {
+        self.set_stop_action(StopAction::Coast)?;
+        self.command(Command::Stop)
+    }
+}
+
+impl Brake for TachoMotor {
+    fn brake(&mut self) -> anyhow::Result<()> {
+        self.set_stop_action(StopAction::Brake)?;
+        self.command(Command::Stop)
+    }
+}
+
+impl Hold for TachoMotor {
+    fn hold(&mut self) -> anyhow::Result<()> {
+        self.set_stop_action(StopAction::Hold)?;
+        self.command(Command::Stop)
     }
 }
