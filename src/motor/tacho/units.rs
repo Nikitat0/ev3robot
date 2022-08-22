@@ -60,6 +60,6 @@ impl From<Degrees> for Revolutions {
 
 impl From<Revolutions> for Degrees {
     fn from(revolutions: Revolutions) -> Self {
-        Degrees((revolutions.value() * 360_f32) as i32)
+        Degrees((revolutions.value() * 360_f32).round() as i32)
     }
 }
