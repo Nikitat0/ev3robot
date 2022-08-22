@@ -128,7 +128,7 @@ macro_rules! tacho_motor {
 
         impl<Speed> $crate::motor::Run<Speed> for $ident
         where
-            $crate::motor::tacho::TachoMotor: $crate::motor::Run<Speed>,
+            Speed: $crate::motor::tacho::TachoMotorSpeedUnit,
         {
             fn run(&mut self, speed: Speed) -> ::anyhow::Result<()> {
                 self.0.run(speed)
