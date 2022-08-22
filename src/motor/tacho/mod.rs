@@ -10,7 +10,7 @@ pub use state::*;
 pub use stop_action::*;
 pub use units::*;
 
-use super::Polarity;
+use super::{Polarity, Run};
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
@@ -132,5 +132,13 @@ impl TachoMotorInterface for TachoMotor {
 
     fn set_stop_action(&mut self, value: StopAction) -> anyhow::Result<()> {
         self.stop_action.set_value(value).map_err(anyhow::Error::new)
+    }
+}
+
+impl<Speed: TachoMotorSpeedUnit> Run<Speed> for TachoMotor {
+    fn run(&mut self, speed: Speed) -> anyhow::Result<()> {
+        let speed = speed.tacho_counts(self.count_per_rot(), self.max_speed());
+        self.set_speed_sp(speed)?;
+        self.command(Command::RunForever)
     }
 }
