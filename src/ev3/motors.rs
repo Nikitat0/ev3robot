@@ -125,6 +125,45 @@ macro_rules! tacho_motor {
                 self.0.set_stop_action(value)
             }
         }
+
+        impl<Speed> $crate::motor::Run<Speed> for $ident
+        where
+            Speed: $crate::motor::tacho::TachoMotorSpeedUnit,
+        {
+            fn run(&mut self, speed: Speed) -> ::anyhow::Result<()> {
+                self.0.run(speed)
+            }
+        }
+
+        impl $crate::motor::IsRunning for $ident {
+            fn is_running(&mut self) -> ::anyhow::Result<bool> {
+                self.0.is_running()
+            }
+        }
+
+        impl $crate::motor::IsHolding for $ident {
+            fn is_holding(&mut self) -> ::anyhow::Result<bool> {
+                self.0.is_holding()
+            }
+        }
+
+        impl $crate::motor::Coast for $ident {
+            fn coast(&mut self) -> ::anyhow::Result<()> {
+                self.0.coast()
+            }
+        }
+
+        impl $crate::motor::Brake for $ident {
+            fn brake(&mut self) -> ::anyhow::Result<()> {
+                self.0.brake()
+            }
+        }
+
+        impl $crate::motor::Hold for $ident {
+            fn hold(&mut self) -> ::anyhow::Result<()> {
+                self.0.hold()
+            }
+        }
     };
 }
 

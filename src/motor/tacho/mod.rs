@@ -10,7 +10,7 @@ pub use state::*;
 pub use stop_action::*;
 pub use units::*;
 
-use super::Polarity;
+use super::{Brake, Coast, Hold, IsHolding, IsRunning, Polarity, Run};
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
@@ -132,5 +132,46 @@ impl TachoMotorInterface for TachoMotor {
 
     fn set_stop_action(&mut self, value: StopAction) -> anyhow::Result<()> {
         self.stop_action.set_value(value).map_err(anyhow::Error::new)
+    }
+}
+
+impl<Speed: TachoMotorSpeedUnit> Run<Speed> for TachoMotor {
+    fn run(&mut self, speed: Speed) -> anyhow::Result<()> {
+        let speed = speed.tacho_counts(self.count_per_rot(), self.max_speed());
+        self.set_speed_sp(speed)?;
+        self.command(Command::RunForever)
+    }
+}
+
+impl IsRunning for TachoMotor {
+    fn is_running(&mut self) -> anyhow::Result<bool> {
+        self.state().map(|it| it.contains(State::RUNNING))
+    }
+}
+
+impl IsHolding for TachoMotor {
+    fn is_holding(&mut self) -> anyhow::Result<bool> {
+        self.state().map(|it| it.contains(State::HOLDING))
+    }
+}
+
+impl Coast for TachoMotor {
+    fn coast(&mut self) -> anyhow::Result<()> {
+        self.set_stop_action(StopAction::Coast)?;
+        self.command(Command::Stop)
+    }
+}
+
+impl Brake for TachoMotor {
+    fn brake(&mut self) -> anyhow::Result<()> {
+        self.set_stop_action(StopAction::Brake)?;
+        self.command(Command::Stop)
+    }
+}
+
+impl Hold for TachoMotor {
+    fn hold(&mut self) -> anyhow::Result<()> {
+        self.set_stop_action(StopAction::Hold)?;
+        self.command(Command::Stop)
     }
 }
