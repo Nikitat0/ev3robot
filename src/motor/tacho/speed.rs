@@ -21,7 +21,9 @@ impl TachoMotorSpeedUnit for SignedPercentage {
         _: TachoCounts,
         max_speed: TachoCounts,
     ) -> TachoCounts {
-        TachoCounts::new((max_speed.value() as f32 * self.to_fraction()) as i32)
+        TachoCounts::new(
+            (max_speed.value() as f32 * self.to_fraction()).round() as i32,
+        )
     }
 }
 
@@ -31,7 +33,9 @@ impl TachoMotorSpeedUnit for Percentage {
         _: TachoCounts,
         max_speed: TachoCounts,
     ) -> TachoCounts {
-        TachoCounts::new((max_speed.value() as f32 * self.to_fraction()) as i32)
+        TachoCounts::new(
+            (max_speed.value() as f32 * self.to_fraction()).round() as i32,
+        )
     }
 }
 
