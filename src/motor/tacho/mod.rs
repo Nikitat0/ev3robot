@@ -10,7 +10,7 @@ pub use state::*;
 pub use stop_action::*;
 pub use units::*;
 
-use super::{Polarity, Run};
+use super::{IsHolding, IsRunning, Polarity, Run};
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
@@ -140,5 +140,17 @@ impl<Speed: TachoMotorSpeedUnit> Run<Speed> for TachoMotor {
         let speed = speed.tacho_counts(self.count_per_rot(), self.max_speed());
         self.set_speed_sp(speed)?;
         self.command(Command::RunForever)
+    }
+}
+
+impl IsRunning for TachoMotor {
+    fn is_running(&mut self) -> anyhow::Result<bool> {
+        self.state().map(|it| it.contains(State::RUNNING))
+    }
+}
+
+impl IsHolding for TachoMotor {
+    fn is_holding(&mut self) -> anyhow::Result<bool> {
+        self.state().map(|it| it.contains(State::HOLDING))
     }
 }
