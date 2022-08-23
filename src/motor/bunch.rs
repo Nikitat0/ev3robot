@@ -10,7 +10,7 @@ impl<Motor> MotorsBunch<Motor> {
         iter.into_iter().collect()
     }
 
-    pub fn exec<F, T, U>(&mut self, f: F) -> anyhow::Result<U>
+    pub fn exec<T, U, F>(&mut self, f: F) -> anyhow::Result<U>
     where
         F: FnMut(&mut Motor) -> anyhow::Result<T>,
         U: FromIterator<T>,
@@ -20,7 +20,7 @@ impl<Motor> MotorsBunch<Motor> {
 }
 
 impl<Motor> FromIterator<Motor> for MotorsBunch<Motor> {
-    fn from_iter<T: IntoIterator<Item = Motor>>(iter: T) -> Self {
+    fn from_iter<I: IntoIterator<Item = Motor>>(iter: I) -> Self {
         MotorsBunch(iter.into_iter().collect())
     }
 }
