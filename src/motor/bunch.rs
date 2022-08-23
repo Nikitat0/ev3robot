@@ -8,9 +8,10 @@ impl<Motor> MotorsBunch<Motor> {
         iter.into_iter().collect()
     }
 
-    pub fn exec<F>(&mut self, f: F) -> anyhow::Result<()>
+    pub fn exec<F, T, U>(&mut self, f: F) -> anyhow::Result<U>
     where
-        F: FnMut(&mut Motor) -> anyhow::Result<()>,
+        F: FnMut(&mut Motor) -> anyhow::Result<T>,
+        U: FromIterator<T>,
     {
         self.0.iter_mut().map(f).collect()
     }
