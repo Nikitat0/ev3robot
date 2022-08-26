@@ -25,12 +25,12 @@ impl<Motor> FromIterator<Motor> for MotorsBunch<Motor> {
     }
 }
 
-impl<Motor, Speed> Run<Speed> for MotorsBunch<Motor>
+impl<Motor, SpeedUnit> Run<SpeedUnit> for MotorsBunch<Motor>
 where
-    Motor: Run<Speed>,
-    Speed: Clone,
+    Motor: Run<SpeedUnit>,
+    SpeedUnit: Clone,
 {
-    fn run(&mut self, speed: Speed) -> anyhow::Result<()> {
+    fn run(&mut self, speed: SpeedUnit) -> anyhow::Result<()> {
         self.exec(|it| it.run(speed.clone()))
     }
 }

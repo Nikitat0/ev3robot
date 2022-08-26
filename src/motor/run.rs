@@ -1,3 +1,3 @@
-pub trait Run<Speed> {
-    fn run(&mut self, speed: Speed) -> anyhow::Result<()>;
+pub trait Run<SpeedUnit> {
+    fn run(&mut self, speed: SpeedUnit) -> anyhow::Result<()>;
 }
