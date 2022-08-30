@@ -1,5 +1,6 @@
 mod command;
 mod position;
+mod rotate;
 mod speed;
 mod state;
 mod stop_action;
@@ -7,6 +8,7 @@ mod units;
 
 pub use command::*;
 pub use position::*;
+pub use rotate::*;
 pub use speed::*;
 pub use state::*;
 pub use stop_action::*;
