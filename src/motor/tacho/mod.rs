@@ -179,3 +179,19 @@ impl Hold for TachoMotor {
         self.command(Command::Stop)
     }
 }
+
+impl Rotate for TachoMotor {
+    fn rotate(
+        &mut self,
+        speed: impl TachoMotorSpeedUnit,
+        shift: impl TachoMotorPositionUnit,
+        stop_action: StopAction,
+    ) -> anyhow::Result<()> {
+        let count_per_rot = self.count_per_rot();
+        let max_speed = self.max_speed();
+        self.set_speed_sp(speed.tacho_counts(count_per_rot, max_speed))?;
+        self.set_position_sp(shift.tacho_counts(count_per_rot))?;
+        self.set_stop_action(stop_action)?;
+        self.command(Command::RunToRelPos)
+    }
+}
