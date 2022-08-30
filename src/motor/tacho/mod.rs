@@ -137,8 +137,8 @@ impl TachoMotorInterface for TachoMotor {
     }
 }
 
-impl<Speed: TachoMotorSpeedUnit> Run<Speed> for TachoMotor {
-    fn run(&mut self, speed: Speed) -> anyhow::Result<()> {
+impl<SpeedUnit: TachoMotorSpeedUnit> Run<SpeedUnit> for TachoMotor {
+    fn run(&mut self, speed: SpeedUnit) -> anyhow::Result<()> {
         let speed = speed.tacho_counts(self.count_per_rot(), self.max_speed());
         self.set_speed_sp(speed)?;
         self.command(Command::RunForever)

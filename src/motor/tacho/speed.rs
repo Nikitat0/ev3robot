@@ -1,7 +1,7 @@
 use super::{Degrees, TachoCounts};
 use crate::percentage::{Percentage, SignedPercentage};
 
-pub trait TachoMotorSpeedUnit {
+pub trait TachoMotorSpeedUnit: Clone {
     fn tacho_counts(
         self,
         count_per_rot: TachoCounts,
@@ -39,7 +39,7 @@ impl TachoMotorSpeedUnit for Percentage {
     }
 }
 
-impl<T: Into<Degrees>> TachoMotorSpeedUnit for T {
+impl<T: Into<Degrees> + Clone> TachoMotorSpeedUnit for T {
     fn tacho_counts(
         self,
         count_per_rot: TachoCounts,
