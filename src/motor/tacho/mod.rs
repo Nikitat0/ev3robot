@@ -14,7 +14,10 @@ pub use state::*;
 pub use stop_action::*;
 pub use units::*;
 
-use super::{Brake, Coast, Hold, IsHolding, IsRunning, Polarity, Run};
+use super::{
+    Brake, Coast, DutyCycleController, Hold, IsHolding, IsRunning, Polarity,
+    Run, RunDirect,
+};
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
 };
@@ -193,5 +196,18 @@ impl Rotate for TachoMotor {
         self.set_position_sp(shift.tacho_counts(count_per_rot))?;
         self.set_stop_action(stop_action)?;
         self.command(Command::RunToRelPos)
+    }
+}
+
+impl RunDirect for TachoMotor {
+    fn run_direct(
+        &mut self,
+        duty_cycle: SignedPercentage,
+    ) -> anyhow::Result<DutyCycleController> {
+        self.set_duty_cycle_sp(duty_cycle)?;
+        self.command(Command::RunDirect)?;
+        Ok(DutyCycleController::new(|duty_cycle| {
+            self.set_duty_cycle_sp(duty_cycle)
+        }))
     }
 }

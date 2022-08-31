@@ -175,6 +175,15 @@ macro_rules! tacho_motor {
                 self.0.rotate(speed, shift, stop_action)
             }
         }
+
+        impl $crate::motor::RunDirect for $ident {
+            fn run_direct(
+                &mut self,
+                duty_cycle: $crate::percentage::SignedPercentage,
+            ) -> ::anyhow::Result<$crate::motor::DutyCycleController> {
+                self.0.run_direct(duty_cycle)
+            }
+        }
     };
 }
 

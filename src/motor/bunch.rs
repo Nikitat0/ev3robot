@@ -3,7 +3,11 @@ use derive_more::*;
 use super::tacho::{
     Rotate, StopAction, TachoMotorPositionUnit, TachoMotorSpeedUnit,
 };
-use super::{Brake, Coast, Hold, IsHolding, IsRunning, Run};
+use super::{
+    Brake, Coast, DutyCycleController, Hold, IsHolding, IsRunning, Run,
+    RunDirect,
+};
+use crate::percentage::SignedPercentage;
 
 #[derive(Debug, Index, IndexMut, IntoIterator)]
 pub struct MotorsBunch<Motor>(Vec<Motor>);
@@ -13,9 +17,9 @@ impl<Motor> MotorsBunch<Motor> {
         iter.into_iter().collect()
     }
 
-    pub fn exec<T, U, F>(&mut self, f: F) -> anyhow::Result<U>
+    pub fn exec<'a, T, U, F>(&'a mut self, f: F) -> anyhow::Result<U>
     where
-        F: FnMut(&mut Motor) -> anyhow::Result<T>,
+        F: FnMut(&'a mut Motor) -> anyhow::Result<T>,
         U: FromIterator<T>,
     {
         self.0.iter_mut().map(f).collect()
@@ -80,5 +84,20 @@ impl<Motor: Rotate> Rotate for MotorsBunch<Motor> {
         stop_action: StopAction,
     ) -> anyhow::Result<()> {
         self.exec(|it| it.rotate(speed.clone(), shift.clone(), stop_action))
+    }
+}
+
+impl<Motor: RunDirect> RunDirect for MotorsBunch<Motor> {
+    fn run_direct<'a>(
+        &mut self,
+        duty_cycle: SignedPercentage,
+    ) -> anyhow::Result<DutyCycleController> {
+        let mut controllers: Vec<_> =
+            self.exec(|it| it.run_direct(duty_cycle))?;
+        Ok(DutyCycleController::new(move |duty_cycle| {
+            controllers
+                .iter_mut()
+                .try_for_each(|it| it.set_duty_cycle(duty_cycle))
+        }))
     }
 }
