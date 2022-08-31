@@ -1,5 +1,8 @@
 use derive_more::*;
 
+use super::tacho::{
+    Rotate, StopAction, TachoMotorPositionUnit, TachoMotorSpeedUnit,
+};
 use super::{Brake, Coast, Hold, IsHolding, IsRunning, Run};
 
 #[derive(Debug, Index, IndexMut, IntoIterator)]
@@ -66,5 +69,16 @@ impl<Motor: Brake> Brake for MotorsBunch<Motor> {
 impl<Motor: Hold> Hold for MotorsBunch<Motor> {
     fn hold(&mut self) -> anyhow::Result<()> {
         self.exec(Hold::hold)
+    }
+}
+
+impl<Motor: Rotate> Rotate for MotorsBunch<Motor> {
+    fn rotate(
+        &mut self,
+        speed: impl TachoMotorSpeedUnit,
+        shift: impl TachoMotorPositionUnit,
+        stop_action: StopAction,
+    ) -> anyhow::Result<()> {
+        self.exec(|it| it.rotate(speed.clone(), shift.clone(), stop_action))
     }
 }

@@ -164,6 +164,17 @@ macro_rules! tacho_motor {
                 self.0.hold()
             }
         }
+
+        impl $crate::motor::tacho::Rotate for $ident {
+            fn rotate(
+                &mut self,
+                speed: impl $crate::motor::tacho::TachoMotorSpeedUnit,
+                shift: impl $crate::motor::tacho::TachoMotorPositionUnit,
+                stop_action: $crate::motor::tacho::StopAction,
+            ) -> ::anyhow::Result<()> {
+                self.0.rotate(speed, shift, stop_action)
+            }
+        }
     };
 }
 

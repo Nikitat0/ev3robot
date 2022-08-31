@@ -1,5 +1,6 @@
 mod command;
 mod position;
+mod rotate;
 mod speed;
 mod state;
 mod stop_action;
@@ -7,6 +8,7 @@ mod units;
 
 pub use command::*;
 pub use position::*;
+pub use rotate::*;
 pub use speed::*;
 pub use state::*;
 pub use stop_action::*;
@@ -175,5 +177,21 @@ impl Hold for TachoMotor {
     fn hold(&mut self) -> anyhow::Result<()> {
         self.set_stop_action(StopAction::Hold)?;
         self.command(Command::Stop)
+    }
+}
+
+impl Rotate for TachoMotor {
+    fn rotate(
+        &mut self,
+        speed: impl TachoMotorSpeedUnit,
+        shift: impl TachoMotorPositionUnit,
+        stop_action: StopAction,
+    ) -> anyhow::Result<()> {
+        let count_per_rot = self.count_per_rot();
+        let max_speed = self.max_speed();
+        self.set_speed_sp(speed.tacho_counts(count_per_rot, max_speed))?;
+        self.set_position_sp(shift.tacho_counts(count_per_rot))?;
+        self.set_stop_action(stop_action)?;
+        self.command(Command::RunToRelPos)
     }
 }
