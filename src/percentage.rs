@@ -73,3 +73,15 @@ macro_rules! percentage {
 
 percentage!(Percentage, 0..=100, u8);
 percentage!(SignedPercentage, -100..=100, i8);
+
+impl From<Percentage> for SignedPercentage {
+    fn from(Percentage(value): Percentage) -> Self {
+        SignedPercentage(value as i8)
+    }
+}
+
+impl SignedPercentage {
+    pub fn abs(self) -> Percentage {
+        Percentage(self.value().abs() as u8)
+    }
+}
