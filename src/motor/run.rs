@@ -5,28 +5,25 @@ pub trait Run<SpeedUnit: Clone> {
 }
 
 pub trait RunDirect {
-    fn run_direct(
-        &mut self,
+    fn run_direct<'a>(
+        &'a mut self,
         duty_cycle: SignedPercentage,
-    ) -> anyhow::Result<DutyCycleController>;
+    ) -> anyhow::Result<Box<dyn DutyCycleController + 'a>>;
 }
 
-pub struct DutyCycleController<'a>(
-    Box<dyn FnMut(SignedPercentage) -> anyhow::Result<()> + 'a>,
-);
+pub trait DutyCycleController {
+    fn set_duty_cycle(&mut self, value: SignedPercentage)
+        -> anyhow::Result<()>;
+}
 
-impl<'a> DutyCycleController<'a> {
-    pub fn new<F>(f: F) -> Self
-    where
-        F: FnMut(SignedPercentage) -> anyhow::Result<()> + 'a,
-    {
-        Self(Box::new(f))
-    }
-
-    pub fn set_duty_cycle(
+impl<F> DutyCycleController for F
+where
+    F: FnMut(SignedPercentage) -> anyhow::Result<()>,
+{
+    fn set_duty_cycle(
         &mut self,
         value: SignedPercentage,
     ) -> anyhow::Result<()> {
-        self.0(value)
+        self(value)
     }
 }

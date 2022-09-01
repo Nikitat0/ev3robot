@@ -200,14 +200,12 @@ impl Rotate for TachoMotor {
 }
 
 impl RunDirect for TachoMotor {
-    fn run_direct(
-        &mut self,
+    fn run_direct<'a>(
+        &'a mut self,
         duty_cycle: SignedPercentage,
-    ) -> anyhow::Result<DutyCycleController> {
+    ) -> anyhow::Result<Box<dyn DutyCycleController + 'a>> {
         self.set_duty_cycle_sp(duty_cycle)?;
         self.command(Command::RunDirect)?;
-        Ok(DutyCycleController::new(|duty_cycle| {
-            self.set_duty_cycle_sp(duty_cycle)
-        }))
+        Ok(Box::new(|duty_cycle| self.set_duty_cycle_sp(duty_cycle)))
     }
 }

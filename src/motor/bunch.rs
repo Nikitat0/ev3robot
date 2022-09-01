@@ -89,12 +89,12 @@ impl<Motor: Rotate> Rotate for MotorsBunch<Motor> {
 
 impl<Motor: RunDirect> RunDirect for MotorsBunch<Motor> {
     fn run_direct<'a>(
-        &mut self,
+        &'a mut self,
         duty_cycle: SignedPercentage,
-    ) -> anyhow::Result<DutyCycleController> {
+    ) -> anyhow::Result<Box<dyn DutyCycleController + 'a>> {
         let mut controllers: Vec<_> =
             self.exec(|it| it.run_direct(duty_cycle))?;
-        Ok(DutyCycleController::new(move |duty_cycle| {
+        Ok(Box::new(move |duty_cycle| {
             controllers
                 .iter_mut()
                 .try_for_each(|it| it.set_duty_cycle(duty_cycle))

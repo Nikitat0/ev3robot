@@ -177,10 +177,12 @@ macro_rules! tacho_motor {
         }
 
         impl $crate::motor::RunDirect for $ident {
-            fn run_direct(
-                &mut self,
+            fn run_direct<'a>(
+                &'a mut self,
                 duty_cycle: $crate::percentage::SignedPercentage,
-            ) -> ::anyhow::Result<$crate::motor::DutyCycleController> {
+            ) -> ::anyhow::Result<
+                ::std::boxed::Box<dyn $crate::motor::DutyCycleController + 'a>,
+            > {
                 self.0.run_direct(duty_cycle)
             }
         }
