@@ -15,8 +15,7 @@ pub use stop_action::*;
 pub use units::*;
 
 use super::{
-    Brake, Coast, DutyCycleController, Hold, IsHolding, IsRunning, Polarity,
-    Run, RunDirect,
+    Brake, Coast, Hold, IsHolding, IsRunning, Polarity, Run, RunDirect,
 };
 use crate::device::{
     ReadOnlyAttributeFile, ReadWriteAttributeFile, WriteOnlyAttributeFile,
@@ -200,12 +199,11 @@ impl Rotate for TachoMotor {
 }
 
 impl RunDirect for TachoMotor {
-    fn run_direct<'a>(
-        &'a mut self,
+    fn run_direct(
+        &mut self,
         duty_cycle: SignedPercentage,
-    ) -> anyhow::Result<Box<dyn DutyCycleController + 'a>> {
+    ) -> anyhow::Result<()> {
         self.set_duty_cycle_sp(duty_cycle)?;
-        self.command(Command::RunDirect)?;
-        Ok(Box::new(|duty_cycle| self.set_duty_cycle_sp(duty_cycle)))
+        self.command(Command::RunDirect)
     }
 }

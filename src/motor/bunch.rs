@@ -3,10 +3,7 @@ use derive_more::*;
 use super::tacho::{
     Rotate, StopAction, TachoMotorPositionUnit, TachoMotorSpeedUnit,
 };
-use super::{
-    Brake, Coast, DutyCycleController, Hold, IsHolding, IsRunning, Run,
-    RunDirect,
-};
+use super::{Brake, Coast, Hold, IsHolding, IsRunning, Run, RunDirect};
 use crate::percentage::SignedPercentage;
 
 #[derive(Debug, Index, IndexMut, IntoIterator)]
@@ -88,16 +85,10 @@ impl<Motor: Rotate> Rotate for MotorsBunch<Motor> {
 }
 
 impl<Motor: RunDirect> RunDirect for MotorsBunch<Motor> {
-    fn run_direct<'a>(
-        &'a mut self,
+    fn run_direct(
+        &mut self,
         duty_cycle: SignedPercentage,
-    ) -> anyhow::Result<Box<dyn DutyCycleController + 'a>> {
-        let mut controllers: Vec<_> =
-            self.exec(|it| it.run_direct(duty_cycle))?;
-        Ok(Box::new(move |duty_cycle| {
-            controllers
-                .iter_mut()
-                .try_for_each(|it| it.set_duty_cycle(duty_cycle))
-        }))
+    ) -> anyhow::Result<()> {
+        self.exec(|it| it.run_direct(duty_cycle))
     }
 }
